@@ -5,8 +5,20 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:Presentation.WPFApp"
         mc:Ignorable="d"
+        xmlns:viewmodels="clr-namespace:Presentation.WPFApp.ViewModels"
+        xmlns:views="clr-namespace:Presentation.WPFApp.Views"
+        d:DataContext="{d:DesignInstance Type=viewmodels:MainViewModel}"   
         Title="MainWindow" Height="450" Width="800">
-    <Grid>
-
+    <Grid Margin="20">
+        <ContentControl Content="{Binding CurrentViewModel}">
+            <ContentControl.Resources>
+                <DataTemplate DataType="{x:Type viewmodels:ListProductViewModel}">
+                    <views:ListProductView />
+                </DataTemplate>
+                <DataTemplate DataType="{x:Type viewmodels:AddProductViewModel}">
+                    <views:AddProductView />
+                </DataTemplate>
+            </ContentControl.Resources>
+        </ContentControl>
     </Grid>
 </Window>
