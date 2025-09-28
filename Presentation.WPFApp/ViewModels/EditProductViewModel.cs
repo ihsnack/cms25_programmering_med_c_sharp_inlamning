@@ -1,14 +1,16 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using Infrastructure.Interfaces;
 using Infrastructure.Models;
+using Infrastructure.Services;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace Presentation.WPFApp.ViewModels;
 
-public partial class ProductDetailsViewModel(IServiceProvider serviceProvider) : ObservableObject
+public partial class EditProductViewModel(IServiceProvider serviceProvider, IProductService productService) : ObservableObject
 {
-
     private readonly IServiceProvider _serviceProvider = serviceProvider;
+    private readonly IProductService _productService = productService;
 
     [ObservableProperty]
     private Product _product = new();
@@ -21,12 +23,11 @@ public partial class ProductDetailsViewModel(IServiceProvider serviceProvider) :
     }
 
     [RelayCommand]
-    public void NavigateToProductEdit()
+    public void Save()
     {
-        var productEditView = _serviceProvider.GetRequiredService<EditProductViewModel>();
-        productEditView.Product = Product;
+        _productService.UpdateProduct(Product);
 
-        var mainViewModel = _serviceProvider.GetRequiredService<MainViewModel>();
-        mainViewModel.CurrentViewModel = _serviceProvider.GetRequiredService<EditProductViewModel>();
+        NavigateToList();
+
     }
 }

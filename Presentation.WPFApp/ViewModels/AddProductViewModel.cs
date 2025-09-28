@@ -7,17 +7,10 @@ using Microsoft.Extensions.DependencyInjection;
 
 namespace Presentation.WPFApp.ViewModels;
 
-public partial class AddProductViewModel : ObservableObject
+public partial class AddProductViewModel(IServiceProvider serviceProvider, IProductService productService) : ObservableObject
 {
-    private readonly IServiceProvider _serviceProvider;
-    private readonly IProductService _productService;
-
-    public AddProductViewModel(IServiceProvider serviceProvider, IProductService productService)
-    {
-        _serviceProvider = serviceProvider;
-        _productService = productService;
-    }
-
+    private readonly IServiceProvider _serviceProvider = serviceProvider;
+    private readonly IProductService _productService = productService;
     [ObservableProperty]
     public Product _product = new Product();
 

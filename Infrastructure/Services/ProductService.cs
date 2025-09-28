@@ -224,4 +224,23 @@ public class ProductService(IProductRepository productRepository, IFileService f
             };
         }
     }
+    public ResponseResult<bool> UpdateProduct(Product product)
+    {
+        var products = _productRepository.GetProductsFromList();
+
+        var objectToUpdate = products?.FirstOrDefault(e => e.Id == product.Id);
+
+        if (objectToUpdate != null)
+        {
+            objectToUpdate.Title = product.Title;
+            objectToUpdate.Price = product.Price;
+        }
+
+        return new ResponseResult<bool>
+        {
+            Success = true,
+            Message = "Product was updated",
+            Result = true
+        };
+    }
 }
