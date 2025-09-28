@@ -18,6 +18,9 @@
                 <DataTemplate DataType="{x:Type viewmodels:AddProductViewModel}">
                     <views:AddProductView />
                 </DataTemplate>
+                <DataTemplate DataType="{x:Type viewmodels:ProductDetailsViewModel}">
+                    <views:ProductDetailsView />
+                </DataTemplate>
             </ContentControl.Resources>
         </ContentControl>
     </Grid>
