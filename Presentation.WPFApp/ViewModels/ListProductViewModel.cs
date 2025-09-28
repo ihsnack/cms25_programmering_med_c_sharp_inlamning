@@ -35,4 +35,15 @@ public partial class ListProductViewModel : ObservableObject
         var mainViewModel = _serviceProvider.GetRequiredService<MainViewModel>();
         mainViewModel.CurrentViewModel = _serviceProvider.GetRequiredService<AddProductViewModel>();
     }
+
+
+    [RelayCommand]
+    public void NavigateToProductDetails(Product product)
+    {
+        var productDetailsView = _serviceProvider.GetRequiredService<ProductDetailsViewModel>();
+        productDetailsView.Product = product;
+
+        var mainViewModel = _serviceProvider.GetRequiredService<MainViewModel>();
+        mainViewModel.CurrentViewModel = _serviceProvider.GetRequiredService<ProductDetailsViewModel>();
+    }
 }

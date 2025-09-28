@@ -8,26 +8,36 @@
              d:DataContext="{d:DesignInstance Type=viewmodels:ListProductViewModel}"
              xmlns:viewmodels="clr-namespace:Presentation.WPFApp.ViewModels"
              xmlns:models="clr-namespace:Infrastructure.Models;assembly=Infrastructure"
+             Background="white"
              d:DesignHeight="450" d:DesignWidth="800">
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto" />
             <RowDefinition Height="*" />
         </Grid.RowDefinitions>
-        <StackPanel Grid.Row="0">
-            <Button Content="New Product" Command="{Binding NavigateToAddProductCommand}" />
-        </StackPanel>
-        <ListView Grid.Row="1" ItemsSource="{Binding ProductList}">
+
+        <Grid Grid.Row="0">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="auto" />
+            </Grid.ColumnDefinitions>
+
+            <TextBlock Text="Product List" Padding="5" FontSize="20" FontWeight="Bold" HorizontalAlignment="Left" Grid.Column="0" />
+            <Button Content="New Product" Command="{Binding NavigateToAddProductCommand}" HorizontalAlignment="Right" Grid.Column="1" />
+        </Grid>
+        <ListView Grid.Row="1" ItemsSource="{Binding ProductList}" Margin="0 20 0 0">
             <ListView.ItemTemplate>
                 <DataTemplate DataType="{x:Type models:Product}">
                     <Grid>
                         <Grid.RowDefinitions>
                             <RowDefinition Height="auto" />
                             <RowDefinition Height="auto" />
+                            <RowDefinition Height="auto" />
                         </Grid.RowDefinitions>
 
                         <TextBlock Grid.Row="0" Text="{Binding Title}" />
                         <TextBlock Grid.Row="1" Text="{Binding Price}" />
+                        <Button Grid.Row="2" Content="Edit" CommandParameter="{Binding .}" Command="{Binding DataContext.NavigateToProductDetailsCommand, RelativeSource={RelativeSource AncestorType=UserControl}}" />
                     </Grid>
                 </DataTemplate>
             </ListView.ItemTemplate>
