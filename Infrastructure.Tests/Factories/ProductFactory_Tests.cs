@@ -7,7 +7,7 @@ namespace Infrastructure.Tests.Factories
 {
     public class ProductFactory_Tests
     {
-        private Category GetTestCategory() => Category.Clothes;
+        private Category GetTestCategory() => new Category { Name = "Clothes" };
         private Manufacturer GetTestManufacturer() => new Manufacturer { Name = "Test Manufacturer" };
 
         [Fact]
@@ -27,8 +27,8 @@ namespace Infrastructure.Tests.Factories
             Assert.Equal(title, product.Title);
             Assert.Equal(price, product.Price);
             Assert.False(string.IsNullOrEmpty(product.Id));
-            Assert.Equal(category, product.Category);
-            Assert.Equal(manufacturer, product.Manufacturer);
+            Assert.Equal(category.Name, product.Category.Name);
+            Assert.Equal(manufacturer.Name, product.Manufacturer.Name);
         }
 
         [Fact]
@@ -48,10 +48,10 @@ namespace Infrastructure.Tests.Factories
             Assert.NotEqual(product1.Id, product2.Id);
             Assert.False(string.IsNullOrEmpty(product1.Id));
             Assert.False(string.IsNullOrEmpty(product2.Id));
-            Assert.Equal(category, product1.Category);
-            Assert.Equal(manufacturer, product1.Manufacturer);
-            Assert.Equal(category, product2.Category);
-            Assert.Equal(manufacturer, product2.Manufacturer);
+            Assert.Equal(category.Name, product1.Category.Name);
+            Assert.Equal(manufacturer.Name, product1.Manufacturer.Name);
+            Assert.Equal(category.Name, product2.Category.Name);
+            Assert.Equal(manufacturer.Name, product2.Manufacturer.Name);
         }
 
         [Fact]
@@ -71,8 +71,8 @@ namespace Infrastructure.Tests.Factories
             Assert.Equal(title, product.Title);
             Assert.Equal(price, product.Price);
             Assert.False(string.IsNullOrEmpty(product.Id));
-            Assert.Equal(category, product.Category);
-            Assert.Equal(manufacturer, product.Manufacturer);
+            Assert.Equal(category.Name, product.Category.Name);
+            Assert.Equal(manufacturer.Name, product.Manufacturer.Name);
         }
 
         [Fact]
@@ -92,8 +92,8 @@ namespace Infrastructure.Tests.Factories
             Assert.Equal(title, product.Title);
             Assert.Equal(decimal.MinValue, product.Price);
             Assert.False(string.IsNullOrEmpty(product.Id));
-            Assert.Equal(category, product.Category);
-            Assert.Equal(manufacturer, product.Manufacturer);
+            Assert.Equal(category.Name, product.Category.Name);
+            Assert.Equal(manufacturer.Name, product.Manufacturer.Name);
         }
     }
 }

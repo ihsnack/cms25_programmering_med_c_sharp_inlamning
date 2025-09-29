@@ -94,26 +94,20 @@ public class MenuDialogs : IMenuDialogs
             }
         } while (!decimal.TryParse(priceInput, styles, CultureInfo.InvariantCulture, out priceValue));
 
-        // Prompt for valid Category
-        Category category;
-        while (true)
+        string categoryName;
+        do
         {
-            Console.WriteLine("1. Clothes");
-            Console.WriteLine("2. Technology");
-            var categoryInput = Dialogs.Prompt("Enter Category option: ");
-            if (int.TryParse(categoryInput, out int categoryValue) && Enum.IsDefined(typeof(Category), categoryValue - 1))
-            {
-                category = (Category)(categoryValue - 1);
-                break;
-            }
-            else
+            categoryName = Dialogs.Prompt("Enter Category name: ");
+            if (string.IsNullOrWhiteSpace(categoryName))
             {
                 Console.WriteLine();
-                Console.WriteLine("Please enter a valid category option. Press any key.");
+                Console.WriteLine("Category name cannot be empty. Please try again. Press any key.");
                 Console.WriteLine();
                 Console.ReadKey();
             }
-        }
+        } while (string.IsNullOrWhiteSpace(categoryName));
+
+        Category category = new Category { Name = categoryName };
 
         var product = new Product { Title = title, Price = priceValue, Category = category };
 
@@ -161,5 +155,17 @@ public class MenuDialogs : IMenuDialogs
         var result = await _productService.SaveProductsAsync();
         Console.WriteLine($"{result.Message} Press any key.");
         Console.ReadKey();
+    }
+
+    private string GetCategoryNameFromValue(int value)
+    {
+        // Map int value to category name as needed
+        return value switch
+        {
+            1 => "Clothes",
+            2 => "Electronics",
+            3 => "Books",
+            _ => "Unknown"
+        };
     }
 }
