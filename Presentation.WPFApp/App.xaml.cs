@@ -27,17 +27,17 @@ public partial class App : Application
                 services.AddSingleton<MainWindow>();
                 services.AddSingleton<MainViewModel>();
 
-                services.AddTransient<ListProductViewModel>();
-                services.AddTransient<ListProductView>();
+                services.AddTransient<ProductListViewModel>();
+                services.AddTransient<ProductListView>();
 
-                services.AddTransient<AddProductViewModel>();
-                services.AddTransient<AddProductView>();
+                services.AddTransient<ProductAddViewModel>();
+                services.AddTransient<ProductAddView>();
 
                 services.AddSingleton<ProductDetailsViewModel>();
                 services.AddSingleton<ProductDetailsView>();
 
-                services.AddSingleton<EditProductViewModel>();
-                services.AddSingleton<EditProductView>();
+                services.AddSingleton<ProductEditViewModel>();
+                services.AddSingleton<ProductEditView>();
             })
             .Build();
     }
@@ -50,7 +50,7 @@ public partial class App : Application
         var productService = _host.Services.GetRequiredService<IProductService>();
 
         var mainViewModel = _host.Services.GetRequiredService<MainViewModel>();
-        mainViewModel.CurrentViewModel = _host.Services.GetRequiredService<ListProductViewModel>();
+        mainViewModel.CurrentViewModel = _host.Services.GetRequiredService<ProductListViewModel>();
 
         var window = _host.Services.GetRequiredService<MainWindow>();
         window.Show();

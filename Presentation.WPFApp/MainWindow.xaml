@@ -12,17 +12,17 @@
     <Grid Margin="20">
         <ContentControl Content="{Binding CurrentViewModel}">
             <ContentControl.Resources>
-                <DataTemplate DataType="{x:Type viewmodels:ListProductViewModel}">
-                    <views:ListProductView />
+                <DataTemplate DataType="{x:Type viewmodels:ProductListViewModel}">
+                    <views:ProductListView />
                 </DataTemplate>
-                <DataTemplate DataType="{x:Type viewmodels:AddProductViewModel}">
-                    <views:AddProductView />
+                <DataTemplate DataType="{x:Type viewmodels:ProductAddViewModel}">
+                    <views:ProductAddView />
                 </DataTemplate>
                 <DataTemplate DataType="{x:Type viewmodels:ProductDetailsViewModel}">
                     <views:ProductDetailsView />
                 </DataTemplate>
-                <DataTemplate DataType="{x:Type viewmodels:EditProductViewModel}">
-                    <views:EditProductView />
+                <DataTemplate DataType="{x:Type viewmodels:ProductEditViewModel}">
+                    <views:ProductEditView />
                 </DataTemplate>
             </ContentControl.Resources>
         </ContentControl>

@@ -12,15 +12,19 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using Infrastructure.Interfaces;
 
 namespace Presentation.WPFApp.Views
 {
     /// <summary>
-    /// Interaction logic for ListProductView.xaml
+    /// Interaction logic for AddProductView.xaml
     /// </summary>
-    public partial class ListProductView : UserControl
+    public partial class ProductAddView : UserControl
     {
-        public ListProductView()
+
+        private readonly IProductService _productService;
+
+        public ProductAddView()
         {
             InitializeComponent();
         }

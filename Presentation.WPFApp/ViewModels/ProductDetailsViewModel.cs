@@ -2,7 +2,6 @@
 using CommunityToolkit.Mvvm.Input;
 using Infrastructure.Interfaces;
 using Infrastructure.Models;
-using Infrastructure.Services;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace Presentation.WPFApp.ViewModels;
@@ -24,27 +23,23 @@ public partial class ProductDetailsViewModel(IServiceProvider serviceProvider, I
     public void NavigateToList()
     {
         var mainViewModel = _serviceProvider.GetRequiredService<MainViewModel>();
-        mainViewModel.CurrentViewModel = _serviceProvider.GetRequiredService<ListProductViewModel>();
+        mainViewModel.CurrentViewModel = _serviceProvider.GetRequiredService<ProductListViewModel>();
     }
 
     [RelayCommand]
     public void NavigateToProductEdit()
     {
-        var productEditView = _serviceProvider.GetRequiredService<EditProductViewModel>();
+        var productEditView = _serviceProvider.GetRequiredService<ProductEditViewModel>();
         productEditView.Product = Product;
 
         var mainViewModel = _serviceProvider.GetRequiredService<MainViewModel>();
-        mainViewModel.CurrentViewModel = _serviceProvider.GetRequiredService<EditProductViewModel>();
+        mainViewModel.CurrentViewModel = _serviceProvider.GetRequiredService<ProductEditViewModel>();
     }
 
     [RelayCommand]
-    public void Delete()
+    public async Task Delete()
     {
-        var result2 = _productService.GetProducts()?.Result;
-
-        _productService.RemoveProduct(Product.Id);
-
-        var result = _productService.GetProducts()?.Result;
+        await _productService.RemoveProduct(Product.Id);
 
         NavigateToList();
 

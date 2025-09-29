@@ -18,9 +18,9 @@ namespace Presentation.WPFApp.Views
     /// <summary>
     /// Interaction logic for EditProductView.xaml
     /// </summary>
-    public partial class EditProductView : UserControl
+    public partial class ProductEditView : UserControl
     {
-        public EditProductView()
+        public ProductEditView()
         {
             InitializeComponent();
         }
