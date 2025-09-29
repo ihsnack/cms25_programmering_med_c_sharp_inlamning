@@ -109,7 +109,22 @@ public class MenuDialogs : IMenuDialogs
 
         Category category = new Category { Name = categoryName };
 
-        var product = new Product { Title = title, Price = priceValue, Category = category };
+        string manufacturerName;
+        do
+        {
+            manufacturerName = Dialogs.Prompt("Enter Category name: ");
+            if (string.IsNullOrWhiteSpace(manufacturerName))
+            {
+                Console.WriteLine();
+                Console.WriteLine("Category name cannot be empty. Please try again. Press any key.");
+                Console.WriteLine();
+                Console.ReadKey();
+            }
+        } while (string.IsNullOrWhiteSpace(manufacturerName));
+
+        Manufacturer manufacturer = new Manufacturer { Name = manufacturerName };
+
+        var product = new Product { Title = title, Price = priceValue, Category = category, Manufacturer = manufacturer };
 
         var result = _productService.CreateProduct(product);
 
@@ -127,9 +142,11 @@ public class MenuDialogs : IMenuDialogs
         {
             foreach (var product in products)
             {
-                Console.WriteLine($"{"Id:",-10}{product.Id}");
-                Console.WriteLine($"{"Title:",-10}{product.Title}");
-                Console.WriteLine($"{"Price:",-10}{product.Price.ToString(CultureInfo.InvariantCulture)}");
+                Console.WriteLine($"{"Id:",-15}{product.Id}");
+                Console.WriteLine($"{"Title:",-15}{product.Title}");
+                Console.WriteLine($"{"Price:",-15}{product.Price.ToString(CultureInfo.InvariantCulture)}");
+                Console.WriteLine($"{"Category:",-15}{product.Category.Name}");
+                Console.WriteLine($"{"Category:",-15}{product.Manufacturer.Name}");
                 if (product != products.Last())
                 {
                     Console.WriteLine();
@@ -155,17 +172,5 @@ public class MenuDialogs : IMenuDialogs
         var result = await _productService.SaveProductsAsync();
         Console.WriteLine($"{result.Message} Press any key.");
         Console.ReadKey();
-    }
-
-    private string GetCategoryNameFromValue(int value)
-    {
-        // Map int value to category name as needed
-        return value switch
-        {
-            1 => "Clothes",
-            2 => "Electronics",
-            3 => "Books",
-            _ => "Unknown"
-        };
     }
 }
