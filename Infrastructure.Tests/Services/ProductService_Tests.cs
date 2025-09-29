@@ -546,4 +546,40 @@ public class ProductService_Tests
         Assert.False(response.Success);
         Assert.Equal("Repo error", response.Message);
     }
+
+    [Fact]
+    public void ProductService_UpdateProduct_ShouldReturnFalse_WhenProductNotFound()
+    {
+        // arrange
+        var fileServiceMock = new Mock<IFileService>();
+        var productRepositoryMock = new Mock<IProductRepository>();
+        var productService = new ProductService(productRepositoryMock.Object, fileServiceMock.Object);
+        productRepositoryMock.Setup(pr => pr.GetProductById("notfound")).Returns((Product)null!);
+
+        // act
+        var response = productService.UpdateProduct("notfound");
+
+        // assert
+        Assert.False(response.Success);
+        Assert.Equal("Could not find product to update.", response.Message);
+    }
+
+    [Fact]
+    public void ProductService_UpdateProduct_ShouldReturnTrue_WhenProductFound()
+    {
+        // arrange
+        var fileServiceMock = new Mock<IFileService>();
+        var productRepositoryMock = new Mock<IProductRepository>();
+        var productService = new ProductService(productRepositoryMock.Object, fileServiceMock.Object);
+        var product = ProductFactory.Create("Hat", 19.99m);
+        productRepositoryMock.Setup(pr => pr.GetProductById(product.Id)).Returns(product);
+
+        // act
+        var response = productService.UpdateProduct(product.Id);
+
+        // assert
+        Assert.True(response.Success);
+        Assert.Equal("Product was updated.", response.Message);
+        Assert.True(response.Result);
+    }
 }

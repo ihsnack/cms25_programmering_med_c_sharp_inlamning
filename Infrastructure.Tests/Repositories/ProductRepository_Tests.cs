@@ -1,3 +1,4 @@
+using Infrastructure.Factories;
 using Infrastructure.Models;
 using Infrastructure.Repositories;
 using Xunit;
@@ -75,5 +76,40 @@ public class ProductRepository_Tests
         Assert.Equal(2, response.Count);
         Assert.Contains(product1, response);
         Assert.Contains(product2, response);
+    }
+
+    [Fact]
+    public void ProductRepository_GetProductById_ShouldReturnCorrectProduct()
+    {
+        // arrange
+        var productRepository = new ProductRepository();
+        var product1 = ProductFactory.Create("Product 1", 5.99m);
+        var product2 = ProductFactory.Create("Product 2", 15.99m);
+        productRepository.AddProductToList(product1);
+        productRepository.AddProductToList(product2);
+
+        // act
+        var foundProduct = productRepository.GetProductById(product2.Id);
+
+        // assert
+        Assert.NotNull(foundProduct);
+        Assert.Equal(product2.Id, foundProduct.Id);
+        Assert.Equal("Product 2", foundProduct.Title);
+        Assert.Equal(15.99m, foundProduct.Price);
+    }
+
+    [Fact]
+    public void ProductRepository_GetProductById_ShouldReturnNullIfNotFound()
+    {
+        // arrange
+        var productRepository = new ProductRepository();
+        var product = ProductFactory.Create("Product 1", 5.99m);
+        productRepository.AddProductToList(product);
+
+        // act
+        var foundProduct = productRepository.GetProductById("999");
+
+        // assert
+        Assert.Null(foundProduct);
     }
 }
