@@ -12,7 +12,11 @@ public partial class AddProductViewModel(IServiceProvider serviceProvider, IProd
     private readonly IServiceProvider _serviceProvider = serviceProvider;
     private readonly IProductService _productService = productService;
     [ObservableProperty]
-    public Product _product = new Product();
+    public Product _product = new()
+    {
+        Manufacturer = new Manufacturer(),
+        Category = new Category()
+    };
 
     [RelayCommand]
     public void NavigateToList()
@@ -24,12 +28,8 @@ public partial class AddProductViewModel(IServiceProvider serviceProvider, IProd
     [RelayCommand]
     public void SaveProduct()
     {
-        var category = Product.Category;
-        if (!Enum.IsDefined(typeof(Category), category))
-        {
-            return;
-        }
-        var manufacturer = Product.Manufacturer ?? new Manufacturer { Name = "Default Manufacturer" };
+        var category = new Category { Name = Product.Manufacturer.Name };
+        var manufacturer = new Manufacturer { Name = Product.Category.Name };
         var productInstance = ProductFactory.Create(Product.Title, Product.Price, category, manufacturer);
 
         var response = _productService.CreateProduct(productInstance);

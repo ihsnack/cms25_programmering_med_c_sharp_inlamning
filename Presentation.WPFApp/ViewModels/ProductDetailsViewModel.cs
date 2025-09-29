@@ -11,7 +11,11 @@ public partial class ProductDetailsViewModel(IServiceProvider serviceProvider) :
     private readonly IServiceProvider _serviceProvider = serviceProvider;
 
     [ObservableProperty]
-    private Product _product = new();
+    public Product _product = new()
+    {
+        Manufacturer = new Manufacturer(),
+        Category = new Category()
+    };
 
     [RelayCommand]
     public void NavigateToList()

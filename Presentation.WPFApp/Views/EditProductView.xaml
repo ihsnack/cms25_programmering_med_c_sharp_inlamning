@@ -23,8 +23,12 @@
             <TextBox  Text="{Binding Product.Title}" Padding="5" />
             <Label Content="Price" Margin="0 5 0 0" />
             <TextBox  Text="{Binding Product.Price}" Padding="5" />
+            <Label Content="Category" Margin="0 5 0 0" />
+            <TextBox  Text="{Binding Product.Category.Name}" Padding="5" />
+            <Label Content="Manufacturer" Margin="0 5 0 0" />
+            <TextBox  Text="{Binding Product.Manufacturer.Name}" Padding="5" />
         </StackPanel>
-        <Button Content="Save" Grid.Row="2"  Command="{Binding SaveCommand}" Padding="5" Margin="0 40 0 0"/>
-        <Button Content="Cancel" Grid.Row="3"  Command="{Binding NavigateToListCommand}" Padding="5" Margin="0 40 0 0"/>
+        <Button Content="Save" Grid.Row="2"  Command="{Binding SaveCommand}" Padding="5" Margin="0 20 0 0"/>
+        <Button Content="Cancel" Grid.Row="3"  Command="{Binding NavigateToListCommand}" Padding="5" Margin="0 20 0 0"/>
     </Grid>
 </UserControl>
