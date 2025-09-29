@@ -37,7 +37,7 @@
 
                         <TextBlock Grid.Row="0" Text="{Binding Title}" />
                         <TextBlock Grid.Row="1" Text="{Binding Price}" />
-                        <Button Grid.Row="2" Content="Edit" CommandParameter="{Binding .}" Command="{Binding DataContext.NavigateToProductDetailsCommand, RelativeSource={RelativeSource AncestorType=UserControl}}" />
+                        <Button Grid.Row="2" Content="Show" CommandParameter="{Binding .}" Command="{Binding DataContext.NavigateToProductDetailsCommand, RelativeSource={RelativeSource AncestorType=UserControl}}" />
                     </Grid>
                 </DataTemplate>
             </ListView.ItemTemplate>

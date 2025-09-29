@@ -224,4 +224,43 @@ public class ProductService(IProductRepository productRepository, IFileService f
             };
         }
     }
+    public ResponseResult<bool> UpdateProduct(string id)
+    {
+
+        try
+        {
+            var productToUpdate = _productRepository.GetProductById(id);
+
+            if (productToUpdate == null)
+            {
+                return new ResponseResult<bool>
+                {
+                    Success = false,
+                    Message = "Could not find product to update.",
+                };
+
+            }
+
+            productToUpdate.Title = productToUpdate.Title;
+            productToUpdate.Price = productToUpdate.Price;
+
+
+            return new ResponseResult<bool>
+            {
+                Success = true,
+                Message = "Product was updated.",
+                Result = true
+            };
+        }
+        catch (Exception)
+        {
+            return new ResponseResult<bool>
+            {
+                Success = false,
+                Message = "Could not update product.",
+            };
+        }
+
+
+    }
 }

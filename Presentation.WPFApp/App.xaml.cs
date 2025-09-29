@@ -35,6 +35,9 @@ public partial class App : Application
 
                 services.AddSingleton<ProductDetailsViewModel>();
                 services.AddSingleton<ProductDetailsView>();
+
+                services.AddSingleton<EditProductViewModel>();
+                services.AddSingleton<EditProductView>();
             })
             .Build();
     }
