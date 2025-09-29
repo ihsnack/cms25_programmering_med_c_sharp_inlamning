@@ -72,6 +72,8 @@ public class MenuDialogs : IMenuDialogs
             }
         } while (string.IsNullOrWhiteSpace(title));
 
+        Console.WriteLine();
+
         const NumberStyles styles =
             NumberStyles.AllowLeadingWhite |
             NumberStyles.AllowTrailingWhite |
@@ -79,8 +81,6 @@ public class MenuDialogs : IMenuDialogs
 
         decimal priceValue;
         string priceInput;
-
-        Console.WriteLine();
 
         do
         {
@@ -93,6 +93,8 @@ public class MenuDialogs : IMenuDialogs
                 Console.WriteLine();
             }
         } while (!decimal.TryParse(priceInput, styles, CultureInfo.InvariantCulture, out priceValue));
+
+        Console.WriteLine();
 
         string categoryName;
         do
@@ -109,14 +111,16 @@ public class MenuDialogs : IMenuDialogs
 
         Category category = new Category { Name = categoryName };
 
+        Console.WriteLine();
+
         string manufacturerName;
         do
         {
-            manufacturerName = Dialogs.Prompt("Enter Category name: ");
+            manufacturerName = Dialogs.Prompt("Enter Manufacturer name: ");
             if (string.IsNullOrWhiteSpace(manufacturerName))
             {
                 Console.WriteLine();
-                Console.WriteLine("Category name cannot be empty. Please try again. Press any key.");
+                Console.WriteLine("Manufacturer name cannot be empty. Please try again. Press any key.");
                 Console.WriteLine();
                 Console.ReadKey();
             }
@@ -146,7 +150,7 @@ public class MenuDialogs : IMenuDialogs
                 Console.WriteLine($"{"Title:",-15}{product.Title}");
                 Console.WriteLine($"{"Price:",-15}{product.Price.ToString(CultureInfo.InvariantCulture)}");
                 Console.WriteLine($"{"Category:",-15}{product.Category.Name}");
-                Console.WriteLine($"{"Category:",-15}{product.Manufacturer.Name}");
+                Console.WriteLine($"{"Manufacturer:",-15}{product.Manufacturer.Name}");
                 if (product != products.Last())
                 {
                     Console.WriteLine();
