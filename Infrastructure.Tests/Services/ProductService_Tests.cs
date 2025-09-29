@@ -514,7 +514,7 @@ public class ProductService_Tests
         // assert
         Assert.True(response.Success);
         Assert.Equal("No products in list.", response.Message);
-        Assert.Empty(response.Result);
+        Assert.Empty(response.Result!);
     }
 
     [Fact]
@@ -531,7 +531,7 @@ public class ProductService_Tests
         // assert
         Assert.True(response.Success);
         Assert.Equal("Products retrieved successfully.", response.Message);
-        Assert.Single(response.Result);
+        Assert.Single(response.Result!);
         Assert.Equal("Test", response.Result.First().Title);
     }
 
