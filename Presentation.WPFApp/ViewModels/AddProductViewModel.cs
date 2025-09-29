@@ -24,8 +24,11 @@ public partial class AddProductViewModel(IServiceProvider serviceProvider, IProd
     [RelayCommand]
     public void SaveProduct()
     {
-        // Provide default Category and Manufacturer for now
-        var category = Product.Category ?? new Category { Name = "Default Category" };
+        var category = Product.Category;
+        if (!Enum.IsDefined(typeof(Category), category))
+        {
+            return;
+        }
         var manufacturer = Product.Manufacturer ?? new Manufacturer { Name = "Default Manufacturer" };
         var productInstance = ProductFactory.Create(Product.Title, Product.Price, category, manufacturer);
 

@@ -10,7 +10,7 @@ namespace Infrastructure.Tests.Services;
 
 public class ProductService_Tests
 {
-    private Category GetTestCategory() => new Category { Name = "Test Category" };
+    private Category GetTestCategory() => Category.Clothes;
     private Manufacturer GetTestManufacturer() => new Manufacturer { Name = "Test Manufacturer" };
 
     [Fact]

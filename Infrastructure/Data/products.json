@@ -2,16 +2,19 @@
   {
     "Id": "ecc99ca4-319d-418c-b6b3-34dfd09561bd",
     "Title": "Shirt",
-    "Price": 50
+    "Price": 50,
+    "Category":  "Clothes"
   },
   {
     "Id": "891d958f-80c8-4488-ae22-8588ff115756",
     "Title": "Jacket",
-    "Price": 120
+    "Price": 120,
+    "Category":  "Clothes"
   },
   {
     "Id": "f799db2c-0006-4ac1-ac2b-7c1ce87fb73e",
     "Title": "Pants",
-    "Price": 60
+    "Price": 60,
+    "Category":  "Clothes"
   }
 ]

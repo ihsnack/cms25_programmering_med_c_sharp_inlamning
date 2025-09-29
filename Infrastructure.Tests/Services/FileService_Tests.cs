@@ -10,7 +10,7 @@ namespace Infrastructure.Tests.Services;
 
 public class FileService_Tests
 {
-    private Category GetTestCategory() => new Category { Name = "Test Category" };
+    private Category GetTestCategory() => Category.Clothes;
     private Manufacturer GetTestManufacturer() => new Manufacturer { Name = "Test Manufacturer" };
 
     [Fact]
@@ -118,7 +118,7 @@ public class FileService_Tests
         var fileRepositoryMock = new Mock<IFileRepository>();
         var fileRepository = fileRepositoryMock.Object;
         var fileService = new FileService(fileRepository);
-        fileRepositoryMock.Setup(fr => fr.GetContentFromFileAsync()).ReturnsAsync(""));
+        fileRepositoryMock.Setup(fr => fr.GetContentFromFileAsync()).ReturnsAsync("");
 
         // act
         var response = await fileService.LoadFromFileAsync();
