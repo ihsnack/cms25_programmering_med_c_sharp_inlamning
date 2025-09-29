@@ -15,7 +15,7 @@ public class ProductRepository_Tests
     {
         // arrange
         var productRepository = new ProductRepository();
-        var product = new Product { Id = "1", Title = "Test Product", Price = 10.99m, Category = GetTestCategory(), Manufacturer = GetTestManufacturer() };
+        var product = ProductFactory.Create("Test Product", 10.99m, GetTestCategory(), GetTestManufacturer());
 
         // act
         productRepository.AddProductToList(product);
@@ -31,9 +31,9 @@ public class ProductRepository_Tests
     {
         // arrange
         var productRepository = new ProductRepository();
-        var product1 = new Product { Id = "1", Title = "First Product", Price = 5.99m, Category = GetTestCategory(), Manufacturer = GetTestManufacturer() };
-        var product2 = new Product { Id = "2", Title = "Second Product", Price = 15.99m, Category = GetTestCategory(), Manufacturer = GetTestManufacturer() };
-        var product3 = new Product { Id = "3", Title = "Third Product", Price = 25.99m, Category = GetTestCategory(), Manufacturer = GetTestManufacturer() };
+        var product1 = ProductFactory.Create("First Product", 5.99m, GetTestCategory(), GetTestManufacturer());
+        var product2 = ProductFactory.Create("Second Product", 15.99m, GetTestCategory(), GetTestManufacturer());
+        var product3 = ProductFactory.Create("Third Product", 25.99m, GetTestCategory(), GetTestManufacturer());
 
         // act
         productRepository.AddProductToList(product1);
@@ -67,8 +67,8 @@ public class ProductRepository_Tests
     {
         // arrange
         var productRepository = new ProductRepository();
-        var product1 = new Product { Id = "1", Title = "Product 1", Price = 5.99m, Category = GetTestCategory(), Manufacturer = GetTestManufacturer() };
-        var product2 = new Product { Id = "2", Title = "Product 2", Price = 15.99m, Category = GetTestCategory(), Manufacturer = GetTestManufacturer() };
+        var product1 = ProductFactory.Create("Product 1", 5.99m, GetTestCategory(), GetTestManufacturer());
+        var product2 = ProductFactory.Create("Product 2", 15.99m, GetTestCategory(), GetTestManufacturer());
 
         // act
         productRepository.AddProductToList(product1);
