@@ -2,7 +2,6 @@
 using CommunityToolkit.Mvvm.Input;
 using Infrastructure.Interfaces;
 using Infrastructure.Models;
-using Infrastructure.Services;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace Presentation.WPFApp.ViewModels;
@@ -25,7 +24,7 @@ public partial class EditProductViewModel(IServiceProvider serviceProvider, IPro
     [RelayCommand]
     public void Save()
     {
-        _productService.UpdateProduct(Product);
+        _productService.UpdateProduct(Product.Id);
 
         NavigateToList();
 

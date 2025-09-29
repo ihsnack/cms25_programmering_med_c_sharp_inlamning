@@ -224,23 +224,43 @@ public class ProductService(IProductRepository productRepository, IFileService f
             };
         }
     }
-    public ResponseResult<bool> UpdateProduct(Product product)
+    public ResponseResult<bool> UpdateProduct(string id)
     {
-        var products = _productRepository.GetProductsFromList();
 
-        var objectToUpdate = products?.FirstOrDefault(e => e.Id == product.Id);
-
-        if (objectToUpdate != null)
+        try
         {
-            objectToUpdate.Title = product.Title;
-            objectToUpdate.Price = product.Price;
+            var productToUpdate = _productRepository.GetProductById(id);
+
+            if (productToUpdate == null)
+            {
+                return new ResponseResult<bool>
+                {
+                    Success = false,
+                    Message = "Could not find product to update.",
+                };
+
+            }
+
+            productToUpdate.Title = productToUpdate.Title;
+            productToUpdate.Price = productToUpdate.Price;
+
+
+            return new ResponseResult<bool>
+            {
+                Success = true,
+                Message = "Product was updated.",
+                Result = true
+            };
+        }
+        catch (Exception)
+        {
+            return new ResponseResult<bool>
+            {
+                Success = false,
+                Message = "Could not update product.",
+            };
         }
 
-        return new ResponseResult<bool>
-        {
-            Success = true,
-            Message = "Product was updated",
-            Result = true
-        };
+
     }
 }

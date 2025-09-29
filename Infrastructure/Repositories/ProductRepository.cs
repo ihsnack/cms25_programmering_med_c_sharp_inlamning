@@ -16,4 +16,9 @@ public class ProductRepository : IProductRepository
     {
         return _products;
     }
+
+    public Product GetProductById(string id)
+    {
+        return _products.FirstOrDefault(e => e.Id == id)!;
+    }
 }
