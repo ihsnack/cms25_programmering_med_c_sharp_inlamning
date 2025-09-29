@@ -10,6 +10,9 @@ namespace Infrastructure.Tests.Services;
 
 public class ProductService_Tests
 {
+    private Category GetTestCategory() => new Category { Name = "Test Category" };
+    private Manufacturer GetTestManufacturer() => new Manufacturer { Name = "Test Manufacturer" };
+
     [Fact]
     public async Task ProductService_LoadProducts_ShouldHandleEmptyFile()
     {
@@ -40,7 +43,7 @@ public class ProductService_Tests
         var productRepositoryMock = new Mock<IProductRepository>();
         var productService = new ProductService(productRepositoryMock.Object, fileServiceMock.Object);
 
-        var fileProduct = ProductFactory.Create("File Product", 15.99m);
+        var fileProduct = ProductFactory.Create("File Product", 15.99m, GetTestCategory(), GetTestManufacturer());
         var fileProducts = new List<Product> { fileProduct };
 
         fileServiceMock.Setup(fs => fs.LoadFromFileAsync()).Returns(Task.FromResult(new ResponseResult<IEnumerable<Product>>
@@ -94,7 +97,7 @@ public class ProductService_Tests
         var productRepositoryMock = new Mock<IProductRepository>();
         var productService = new ProductService(productRepositoryMock.Object, fileServiceMock.Object);
 
-        var invalidProduct = ProductFactory.Create("", 10.99m);
+        var invalidProduct = ProductFactory.Create("", 10.99m, GetTestCategory(), GetTestManufacturer());
         var fileProducts = new List<Product> { invalidProduct };
 
         fileServiceMock.Setup(fs => fs.LoadFromFileAsync()).Returns(Task.FromResult(new ResponseResult<IEnumerable<Product>>
@@ -119,7 +122,7 @@ public class ProductService_Tests
         var productRepositoryMock = new Mock<IProductRepository>();
         var productService = new ProductService(productRepositoryMock.Object, fileServiceMock.Object);
 
-        var invalidProduct = ProductFactory.Create("Invalid Product", -5.99m);
+        var invalidProduct = ProductFactory.Create("Invalid Product", -5.99m, GetTestCategory(), GetTestManufacturer());
         var fileProducts = new List<Product> { invalidProduct };
 
         fileServiceMock.Setup(fs => fs.LoadFromFileAsync()).Returns(Task.FromResult(new ResponseResult<IEnumerable<Product>>
@@ -162,9 +165,9 @@ public class ProductService_Tests
         var productRepositoryMock = new Mock<IProductRepository>();
         var productService = new ProductService(productRepositoryMock.Object, fileServiceMock.Object);
 
-        var existingProduct = ProductFactory.Create("Existing Product", 10.99m);
-        var duplicateProduct = ProductFactory.Create("Existing Product", 15.99m);
-        var newProduct = ProductFactory.Create("New Product", 20.99m);
+        var existingProduct = ProductFactory.Create("Existing Product", 10.99m, GetTestCategory(), GetTestManufacturer());
+        var duplicateProduct = ProductFactory.Create("Existing Product", 15.99m, GetTestCategory(), GetTestManufacturer());
+        var newProduct = ProductFactory.Create("New Product", 20.99m, GetTestCategory(), GetTestManufacturer());
 
         var fileProducts = new List<Product> { duplicateProduct, newProduct };
         var existingProducts = new List<Product> { existingProduct };
@@ -197,8 +200,8 @@ public class ProductService_Tests
         var productRepositoryMock = new Mock<IProductRepository>();
         var productService = new ProductService(productRepositoryMock.Object, fileServiceMock.Object);
 
-        var product1 = ProductFactory.Create("Product 1", 10.99m);
-        var product2 = ProductFactory.Create("Product 2", 20.99m);
+        var product1 = ProductFactory.Create("Product 1", 10.99m, GetTestCategory(), GetTestManufacturer());
+        var product2 = ProductFactory.Create("Product 2", 20.99m, GetTestCategory(), GetTestManufacturer());
         var products = new List<Product> { product1, product2 };
 
         productRepositoryMock.Setup(pr => pr.GetProductsFromList()).Returns(products);
@@ -275,7 +278,7 @@ public class ProductService_Tests
         var productRepositoryMock = new Mock<IProductRepository>();
         var productService = new ProductService(productRepositoryMock.Object, fileServiceMock.Object);
 
-        var products = new List<Product> { ProductFactory.Create("Test", 10.99m) };
+        var products = new List<Product> { ProductFactory.Create("Test", 10.99m, GetTestCategory(), GetTestManufacturer()) };
 
         productRepositoryMock.Setup(pr => pr.GetProductsFromList()).Returns(products);
         fileServiceMock.Setup(fs => fs.SaveToFileAsync(products)).Throws(new Exception("File system error"));
@@ -297,7 +300,7 @@ public class ProductService_Tests
         var productRepositoryMock = new Mock<IProductRepository>();
         var productService = new ProductService(productRepositoryMock.Object, fileServiceMock.Object);
 
-        var products = new List<Product> { ProductFactory.Create("Test", 10.99m) };
+        var products = new List<Product> { ProductFactory.Create("Test", 10.99m, GetTestCategory(), GetTestManufacturer()) };
         productRepositoryMock.Setup(pr => pr.GetProductsFromList()).Returns(products);
         fileServiceMock.Setup(fs => fs.SaveToFileAsync(products)).Throws(new Exception("Could not save."));
 
@@ -331,7 +334,7 @@ public class ProductService_Tests
         var fileServiceMock = new Mock<IFileService>();
         var productRepositoryMock = new Mock<IProductRepository>();
         var productService = new ProductService(productRepositoryMock.Object, fileServiceMock.Object);
-        var product = ProductFactory.Create(null!, 10.99m);
+        var product = ProductFactory.Create(null!, 10.99m, GetTestCategory(), GetTestManufacturer());
         // act
         var response = productService.CreateProduct(product);
         // assert
@@ -346,7 +349,7 @@ public class ProductService_Tests
         var fileServiceMock = new Mock<IFileService>();
         var productRepositoryMock = new Mock<IProductRepository>();
         var productService = new ProductService(productRepositoryMock.Object, fileServiceMock.Object);
-        var product = ProductFactory.Create("", 10.99m);
+        var product = ProductFactory.Create("", 10.99m, GetTestCategory(), GetTestManufacturer());
         // act
         var response = productService.CreateProduct(product);
         // assert
@@ -361,7 +364,7 @@ public class ProductService_Tests
         var fileServiceMock = new Mock<IFileService>();
         var productRepositoryMock = new Mock<IProductRepository>();
         var productService = new ProductService(productRepositoryMock.Object, fileServiceMock.Object);
-        var product = ProductFactory.Create("Jacket", -10.99m);
+        var product = ProductFactory.Create("Jacket", -10.99m, GetTestCategory(), GetTestManufacturer());
         // act
         var response = productService.CreateProduct(product);
         // assert
@@ -376,7 +379,7 @@ public class ProductService_Tests
         var fileServiceMock = new Mock<IFileService>();
         var productRepositoryMock = new Mock<IProductRepository>();
         var productService = new ProductService(productRepositoryMock.Object, fileServiceMock.Object);
-        var product = ProductFactory.Create("Jacket", 10.99m);
+        var product = ProductFactory.Create("Jacket", 10.99m, GetTestCategory(), GetTestManufacturer());
         productRepositoryMock.Setup(pr => pr.GetProductsFromList()).Returns(new List<Product>());
         // act
         var response = productService.CreateProduct(product);
@@ -394,10 +397,10 @@ public class ProductService_Tests
         var fileServiceMock = new Mock<IFileService>();
         var productRepositoryMock = new Mock<IProductRepository>();
         var productService = new ProductService(productRepositoryMock.Object, fileServiceMock.Object);
-        var existingProduct = ProductFactory.Create("Jacket", 15.99m);
+        var existingProduct = ProductFactory.Create("Jacket", 15.99m, GetTestCategory(), GetTestManufacturer());
         var existingProductsList = new List<Product> { existingProduct };
         productRepositoryMock.Setup(pr => pr.GetProductsFromList()).Returns(existingProductsList);
-        var productDuplicate = ProductFactory.Create("Jacket", 10.99m);
+        var productDuplicate = ProductFactory.Create("Jacket", 10.99m, GetTestCategory(), GetTestManufacturer());
         // act
         var response = productService.CreateProduct(productDuplicate);
         // assert
@@ -413,7 +416,7 @@ public class ProductService_Tests
         var fileServiceMock = new Mock<IFileService>();
         var productRepositoryMock = new Mock<IProductRepository>();
         var productService = new ProductService(productRepositoryMock.Object, fileServiceMock.Object);
-        var product = ProductFactory.Create("Jacket", 10.99m);
+        var product = ProductFactory.Create("Jacket", 10.99m, GetTestCategory(), GetTestManufacturer());
         productRepositoryMock.Setup(pr => pr.GetProductsFromList()).Returns(new List<Product>());
         productRepositoryMock.Setup(pr => pr.AddProductToList(It.IsAny<Product>())).Throws(new Exception("Unknown Error."));
         // act
@@ -432,7 +435,7 @@ public class ProductService_Tests
         var fileServiceMock = new Mock<IFileService>();
         var productRepositoryMock = new Mock<IProductRepository>();
         var productService = new ProductService(productRepositoryMock.Object, fileServiceMock.Object);
-        var product = ProductFactory.Create("Shoes", 49.99m);
+        var product = ProductFactory.Create("Shoes", 49.99m, GetTestCategory(), GetTestManufacturer());
         productRepositoryMock.Setup(pr => pr.GetProductsFromList()).Returns(new List<Product>());
         Product? addedProduct = null;
         productRepositoryMock.Setup(pr => pr.AddProductToList(It.IsAny<Product>()))
@@ -452,10 +455,10 @@ public class ProductService_Tests
         var fileServiceMock = new Mock<IFileService>();
         var productRepositoryMock = new Mock<IProductRepository>();
         var productService = new ProductService(productRepositoryMock.Object, fileServiceMock.Object);
-        var existingProduct = ProductFactory.Create("Jacket", 15.99m);
+        var existingProduct = ProductFactory.Create("Jacket", 15.99m, GetTestCategory(), GetTestManufacturer());
         var existingProductsList = new List<Product> { existingProduct };
         productRepositoryMock.Setup(pr => pr.GetProductsFromList()).Returns(existingProductsList);
-        var productDuplicate = ProductFactory.Create("jAcKeT", 10.99m);
+        var productDuplicate = ProductFactory.Create("jAcKeT", 10.99m, GetTestCategory(), GetTestManufacturer());
         // act
         var response = productService.CreateProduct(productDuplicate);
         // assert
@@ -470,7 +473,7 @@ public class ProductService_Tests
         var fileServiceMock = new Mock<IFileService>();
         var productRepositoryMock = new Mock<IProductRepository>();
         var productService = new ProductService(productRepositoryMock.Object, fileServiceMock.Object);
-        var product = ProductFactory.Create("   ", 10.99m);
+        var product = ProductFactory.Create("   ", 10.99m, GetTestCategory(), GetTestManufacturer());
         // act
         var response = productService.CreateProduct(product);
         // assert
@@ -485,7 +488,7 @@ public class ProductService_Tests
         var fileServiceMock = new Mock<IFileService>();
         var productRepositoryMock = new Mock<IProductRepository>();
         var productService = new ProductService(productRepositoryMock.Object, fileServiceMock.Object);
-        var product = ProductFactory.Create("Hat", 19.99m);
+        var product = ProductFactory.Create("Hat", 19.99m, GetTestCategory(), GetTestManufacturer());
         productRepositoryMock.Setup(pr => pr.GetProductsFromList()).Returns(new List<Product>());
         Product? addedProduct = null;
         productRepositoryMock.Setup(pr => pr.AddProductToList(It.IsAny<Product>()))
@@ -521,7 +524,7 @@ public class ProductService_Tests
         var fileServiceMock = new Mock<IFileService>();
         var productRepositoryMock = new Mock<IProductRepository>();
         var productService = new ProductService(productRepositoryMock.Object, fileServiceMock.Object);
-        var products = new List<Product> { ProductFactory.Create("Test", 10.99m) };
+        var products = new List<Product> { ProductFactory.Create("Test", 10.99m, GetTestCategory(), GetTestManufacturer()) };
         productRepositoryMock.Setup(pr => pr.GetProductsFromList()).Returns(products);
         // act
         var response = productService.GetProducts();
@@ -571,7 +574,7 @@ public class ProductService_Tests
         var fileServiceMock = new Mock<IFileService>();
         var productRepositoryMock = new Mock<IProductRepository>();
         var productService = new ProductService(productRepositoryMock.Object, fileServiceMock.Object);
-        var product = ProductFactory.Create("Hat", 19.99m);
+        var product = ProductFactory.Create("Hat", 19.99m, GetTestCategory(), GetTestManufacturer());
         productRepositoryMock.Setup(pr => pr.GetProductById(product.Id)).Returns(product);
 
         // act

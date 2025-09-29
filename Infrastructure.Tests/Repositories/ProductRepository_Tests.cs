@@ -7,12 +7,15 @@ namespace Infrastructure.Tests.Repositories;
 
 public class ProductRepository_Tests
 {
+    private Category GetTestCategory() => new Category { Name = "Test Category" };
+    private Manufacturer GetTestManufacturer() => new Manufacturer { Name = "Test Manufacturer" };
+
     [Fact]
     public void ProductRepository_AddProductToList_ShouldAddProduct()
     {
         // arrange
         var productRepository = new ProductRepository();
-        var product = new Product { Id = "1", Title = "Test Product", Price = 10.99m };
+        var product = new Product { Id = "1", Title = "Test Product", Price = 10.99m, Category = GetTestCategory(), Manufacturer = GetTestManufacturer() };
 
         // act
         productRepository.AddProductToList(product);
@@ -28,9 +31,9 @@ public class ProductRepository_Tests
     {
         // arrange
         var productRepository = new ProductRepository();
-        var product1 = new Product { Id = "1", Title = "First Product", Price = 5.99m };
-        var product2 = new Product { Id = "2", Title = "Second Product", Price = 15.99m };
-        var product3 = new Product { Id = "3", Title = "Third Product", Price = 25.99m };
+        var product1 = new Product { Id = "1", Title = "First Product", Price = 5.99m, Category = GetTestCategory(), Manufacturer = GetTestManufacturer() };
+        var product2 = new Product { Id = "2", Title = "Second Product", Price = 15.99m, Category = GetTestCategory(), Manufacturer = GetTestManufacturer() };
+        var product3 = new Product { Id = "3", Title = "Third Product", Price = 25.99m, Category = GetTestCategory(), Manufacturer = GetTestManufacturer() };
 
         // act
         productRepository.AddProductToList(product1);
@@ -64,8 +67,8 @@ public class ProductRepository_Tests
     {
         // arrange
         var productRepository = new ProductRepository();
-        var product1 = new Product { Id = "1", Title = "Product 1", Price = 5.99m };
-        var product2 = new Product { Id = "2", Title = "Product 2", Price = 15.99m };
+        var product1 = new Product { Id = "1", Title = "Product 1", Price = 5.99m, Category = GetTestCategory(), Manufacturer = GetTestManufacturer() };
+        var product2 = new Product { Id = "2", Title = "Product 2", Price = 15.99m, Category = GetTestCategory(), Manufacturer = GetTestManufacturer() };
 
         // act
         productRepository.AddProductToList(product1);
@@ -83,8 +86,8 @@ public class ProductRepository_Tests
     {
         // arrange
         var productRepository = new ProductRepository();
-        var product1 = ProductFactory.Create("Product 1", 5.99m);
-        var product2 = ProductFactory.Create("Product 2", 15.99m);
+        var product1 = ProductFactory.Create("Product 1", 5.99m, GetTestCategory(), GetTestManufacturer());
+        var product2 = ProductFactory.Create("Product 2", 15.99m, GetTestCategory(), GetTestManufacturer());
         productRepository.AddProductToList(product1);
         productRepository.AddProductToList(product2);
 
@@ -103,7 +106,7 @@ public class ProductRepository_Tests
     {
         // arrange
         var productRepository = new ProductRepository();
-        var product = ProductFactory.Create("Product 1", 5.99m);
+        var product = ProductFactory.Create("Product 1", 5.99m, GetTestCategory(), GetTestManufacturer());
         productRepository.AddProductToList(product);
 
         // act

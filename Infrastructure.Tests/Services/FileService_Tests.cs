@@ -10,6 +10,9 @@ namespace Infrastructure.Tests.Services;
 
 public class FileService_Tests
 {
+    private Category GetTestCategory() => new Category { Name = "Test Category" };
+    private Manufacturer GetTestManufacturer() => new Manufacturer { Name = "Test Manufacturer" };
+
     [Fact]
     public async Task FileService_SaveToFileAsync_ShouldReturnMessageIfSuccess()
     {
@@ -18,7 +21,7 @@ public class FileService_Tests
         var fileRepository = fileRepositoryMock.Object;
         var fileService = new FileService(fileRepository);
 
-        var testProduct = ProductFactory.Create("test product", 9.99m);
+        var testProduct = ProductFactory.Create("test product", 9.99m, GetTestCategory(), GetTestManufacturer());
         var expectedId = testProduct.Id;
         var products = new List<Product> { testProduct };
 
@@ -44,7 +47,7 @@ public class FileService_Tests
         var fileRepository = fileRepositoryMock.Object;
         var fileService = new FileService(fileRepository);
 
-        var testProduct = ProductFactory.Create("test product", 9.99m);
+        var testProduct = ProductFactory.Create("test product", 9.99m, GetTestCategory(), GetTestManufacturer());
         var expectedId = testProduct.Id;
         var products = new List<Product> { testProduct };
 
@@ -90,7 +93,7 @@ public class FileService_Tests
         var fileRepository = fileRepositoryMock.Object;
         var fileService = new FileService(fileRepository);
 
-        var testProduct = ProductFactory.Create("test product", 9.99m);
+        var testProduct = ProductFactory.Create("test product", 9.99m, GetTestCategory(), GetTestManufacturer());
         var expectedId = testProduct.Id;
         var products = new List<Product> { testProduct };
 
@@ -115,7 +118,7 @@ public class FileService_Tests
         var fileRepositoryMock = new Mock<IFileRepository>();
         var fileRepository = fileRepositoryMock.Object;
         var fileService = new FileService(fileRepository);
-        fileRepositoryMock.Setup(fr => fr.GetContentFromFileAsync()).ReturnsAsync("");
+        fileRepositoryMock.Setup(fr => fr.GetContentFromFileAsync()).ReturnsAsync(""));
 
         // act
         var response = await fileService.LoadFromFileAsync();
@@ -134,8 +137,8 @@ public class FileService_Tests
         var fileRepository = fileRepositoryMock.Object;
         var fileService = new FileService(fileRepository);
 
-        var product1 = ProductFactory.Create("existing product", 5.99m);
-        var product2 = ProductFactory.Create("New File Product", 15.99m);
+        var product1 = ProductFactory.Create("existing product", 5.99m, GetTestCategory(), GetTestManufacturer());
+        var product2 = ProductFactory.Create("New File Product", 15.99m, GetTestCategory(), GetTestManufacturer());
         var expectedId1 = product1.Id;
         var expectedId2 = product2.Id;
 
@@ -202,7 +205,7 @@ public class FileService_Tests
         var fileRepository = fileRepositoryMock.Object;
         var fileService = new FileService(fileRepository);
 
-        var testProduct = ProductFactory.Create("test product", 9.99m);
+        var testProduct = ProductFactory.Create("test product", 9.99m, GetTestCategory(), GetTestManufacturer());
         var expectedId = testProduct.Id;
 
         var productsInFile = new List<Product> { testProduct };

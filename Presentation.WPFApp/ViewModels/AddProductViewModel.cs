@@ -24,7 +24,10 @@ public partial class AddProductViewModel(IServiceProvider serviceProvider, IProd
     [RelayCommand]
     public void SaveProduct()
     {
-        var productInstance = ProductFactory.Create(Product.Title, Product.Price);
+        // Provide default Category and Manufacturer for now
+        var category = Product.Category ?? new Category { Name = "Default Category" };
+        var manufacturer = Product.Manufacturer ?? new Manufacturer { Name = "Default Manufacturer" };
+        var productInstance = ProductFactory.Create(Product.Title, Product.Price, category, manufacturer);
 
         var response = _productService.CreateProduct(productInstance);
 
