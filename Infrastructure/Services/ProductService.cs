@@ -205,7 +205,7 @@ public class ProductService(IProductRepository productRepository, IFileService f
         }
         try
         {
-            var newProduct = ProductFactory.Create(product.Title, product.Price);
+            var newProduct = ProductFactory.Create(product.Title, product.Price, product.Category, product.Manufacturer);
             _productRepository.AddProductToList(newProduct);
             return new ResponseResult<bool>
             {

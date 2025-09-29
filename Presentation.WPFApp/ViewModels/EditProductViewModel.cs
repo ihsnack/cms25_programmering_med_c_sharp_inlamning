@@ -12,7 +12,11 @@ public partial class EditProductViewModel(IServiceProvider serviceProvider, IPro
     private readonly IProductService _productService = productService;
 
     [ObservableProperty]
-    private Product _product = new();
+    public Product _product = new()
+    {
+        Manufacturer = new Manufacturer(),
+        Category = new Category()
+    };
 
     [RelayCommand]
     public void NavigateToList()

@@ -72,6 +72,8 @@ public class MenuDialogs : IMenuDialogs
             }
         } while (string.IsNullOrWhiteSpace(title));
 
+        Console.WriteLine();
+
         const NumberStyles styles =
             NumberStyles.AllowLeadingWhite |
             NumberStyles.AllowTrailingWhite |
@@ -79,8 +81,6 @@ public class MenuDialogs : IMenuDialogs
 
         decimal priceValue;
         string priceInput;
-
-        Console.WriteLine();
 
         do
         {
@@ -94,7 +94,41 @@ public class MenuDialogs : IMenuDialogs
             }
         } while (!decimal.TryParse(priceInput, styles, CultureInfo.InvariantCulture, out priceValue));
 
-        var product = new Product { Title = title, Price = priceValue };
+        Console.WriteLine();
+
+        string categoryName;
+        do
+        {
+            categoryName = Dialogs.Prompt("Enter Category name: ");
+            if (string.IsNullOrWhiteSpace(categoryName))
+            {
+                Console.WriteLine();
+                Console.WriteLine("Category name cannot be empty. Please try again. Press any key.");
+                Console.WriteLine();
+                Console.ReadKey();
+            }
+        } while (string.IsNullOrWhiteSpace(categoryName));
+
+        Category category = new Category { Name = categoryName };
+
+        Console.WriteLine();
+
+        string manufacturerName;
+        do
+        {
+            manufacturerName = Dialogs.Prompt("Enter Manufacturer name: ");
+            if (string.IsNullOrWhiteSpace(manufacturerName))
+            {
+                Console.WriteLine();
+                Console.WriteLine("Manufacturer name cannot be empty. Please try again. Press any key.");
+                Console.WriteLine();
+                Console.ReadKey();
+            }
+        } while (string.IsNullOrWhiteSpace(manufacturerName));
+
+        Manufacturer manufacturer = new Manufacturer { Name = manufacturerName };
+
+        var product = new Product { Title = title, Price = priceValue, Category = category, Manufacturer = manufacturer };
 
         var result = _productService.CreateProduct(product);
 
@@ -112,9 +146,11 @@ public class MenuDialogs : IMenuDialogs
         {
             foreach (var product in products)
             {
-                Console.WriteLine($"{"Id:",-10}{product.Id}");
-                Console.WriteLine($"{"Title:",-10}{product.Title}");
-                Console.WriteLine($"{"Price:",-10}{product.Price.ToString(CultureInfo.InvariantCulture)}");
+                Console.WriteLine($"{"Id:",-15}{product.Id}");
+                Console.WriteLine($"{"Title:",-15}{product.Title}");
+                Console.WriteLine($"{"Price:",-15}{product.Price.ToString(CultureInfo.InvariantCulture)}");
+                Console.WriteLine($"{"Category:",-15}{product.Category.Name}");
+                Console.WriteLine($"{"Manufacturer:",-15}{product.Manufacturer.Name}");
                 if (product != products.Last())
                 {
                     Console.WriteLine();

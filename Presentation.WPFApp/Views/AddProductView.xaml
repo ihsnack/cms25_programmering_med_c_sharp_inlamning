@@ -22,8 +22,12 @@
             <TextBox x:Name="Title" Text="{Binding Product.Title}" Padding="5" />
             <Label Content="Price" Margin="0 5 0 0" />
             <TextBox x:Name="Price"  Text="{Binding Product.Price}" Padding="5" />
-            <Button x:Name="AddProduct" Content="Add Product" Padding="5" Command="{Binding SaveProductCommand}" Margin="0 40 0 0" />
-            <Button Content="Cancel" Grid.Row="0"  Command="{Binding NavigateToListCommand}" Padding="5" Margin="0 40 0 0"/>
+            <Label Content="Category" Margin="0 5 0 0" />
+            <TextBox x:Name="Category"  Text="{Binding Product.Category.Name}" Padding="5" />
+            <Label Content="Manufacturer" Margin="0 5 0 0" />
+            <TextBox x:Name="Manufacturer"  Text="{Binding Product.Manufacturer.Name}" Padding="5" />
+            <Button x:Name="AddProduct" Content="Add Product" Padding="5" Command="{Binding SaveProductCommand}" Margin="0 20 0 0" />
+            <Button Content="Cancel" Grid.Row="0"  Command="{Binding NavigateToListCommand}" Padding="5" Margin="0 15 0 0"/>
         </StackPanel>
     </Grid>
 </UserControl>
