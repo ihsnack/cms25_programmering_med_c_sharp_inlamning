@@ -7,14 +7,14 @@ using Microsoft.Extensions.DependencyInjection;
 
 namespace Presentation.WPFApp.ViewModels;
 
-public partial class ListProductViewModel : ObservableObject
+public partial class ProductListViewModel : ObservableObject
 {
     private readonly IServiceProvider _serviceProvider;
 
     [ObservableProperty]
     private ObservableCollection<Product> _productList = [];
 
-    public ListProductViewModel(IServiceProvider serviceProvider)
+    public ProductListViewModel(IServiceProvider serviceProvider)
     {
         _serviceProvider = serviceProvider;
 
@@ -33,7 +33,7 @@ public partial class ListProductViewModel : ObservableObject
     public void NavigateToAddProduct()
     {
         var mainViewModel = _serviceProvider.GetRequiredService<MainViewModel>();
-        mainViewModel.CurrentViewModel = _serviceProvider.GetRequiredService<AddProductViewModel>();
+        mainViewModel.CurrentViewModel = _serviceProvider.GetRequiredService<ProductAddViewModel>();
     }
 
 

@@ -1,35 +1,33 @@
-﻿<UserControl x:Class="Presentation.WPFApp.Views.EditProductView"
+﻿<UserControl x:Class="Presentation.WPFApp.Views.ProductAddView"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:Presentation.WPFApp.Views"
              mc:Ignorable="d" 
-             Background="white"
-             d:DataContext="{d:DesignInstance Type=viewmodels:EditProductViewModel}"
+             d:DataContext="{d:DesignInstance Type=viewmodels:ProductAddViewModel}"
              xmlns:viewmodels="clr-namespace:Presentation.WPFApp.ViewModels"
              xmlns:models="clr-namespace:Infrastructure.Models;assembly=Infrastructure"
+             Background="white"
              d:DesignHeight="800" d:DesignWidth="800">
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto" />
             <RowDefinition Height="Auto" />
             <RowDefinition Height="Auto" />
-            <RowDefinition Height="Auto" />
-            <RowDefinition Height="Auto" />
         </Grid.RowDefinitions>
-        <TextBlock Text="Product Edit" Padding="5" FontSize="20" FontWeight="Bold" Grid.Row="0" />
+        <TextBlock Text="New User" Padding="5" FontSize="20" FontWeight="Bold" />
         <StackPanel Grid.Row="1">
             <Label Content="Title" Margin="0 5 0 0" />
-            <TextBox  Text="{Binding Product.Title}" Padding="5" />
+            <TextBox x:Name="Title" Text="{Binding Product.Title}" Padding="5" />
             <Label Content="Price" Margin="0 5 0 0" />
-            <TextBox  Text="{Binding Product.Price}" Padding="5" />
+            <TextBox x:Name="Price"  Text="{Binding Product.Price}" Padding="5" />
             <Label Content="Category" Margin="0 5 0 0" />
-            <TextBox  Text="{Binding Product.Category.Name}" Padding="5" />
+            <TextBox x:Name="Category"  Text="{Binding Product.Category.Name}" Padding="5" />
             <Label Content="Manufacturer" Margin="0 5 0 0" />
-            <TextBox  Text="{Binding Product.Manufacturer.Name}" Padding="5" />
+            <TextBox x:Name="Manufacturer"  Text="{Binding Product.Manufacturer.Name}" Padding="5" />
+            <Button x:Name="AddProduct" Content="Add Product" Padding="5" Command="{Binding SaveProductCommand}" Margin="0 20 0 0" />
+            <Button Content="Cancel" Grid.Row="0"  Command="{Binding NavigateToListCommand}" Padding="5" Margin="0 15 0 0"/>
         </StackPanel>
-        <Button Content="Save" Grid.Row="2"  Command="{Binding SaveCommand}" Padding="5" Margin="0 20 0 0"/>
-        <Button Content="Cancel" Grid.Row="3"  Command="{Binding NavigateToListCommand}" Padding="5" Margin="0 20 0 0"/>
     </Grid>
 </UserControl>
