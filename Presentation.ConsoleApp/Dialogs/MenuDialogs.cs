@@ -94,7 +94,28 @@ public class MenuDialogs : IMenuDialogs
             }
         } while (!decimal.TryParse(priceInput, styles, CultureInfo.InvariantCulture, out priceValue));
 
-        var product = new Product { Title = title, Price = priceValue };
+        // Prompt for valid Category
+        Category category;
+        while (true)
+        {
+            Console.WriteLine("1. Clothes");
+            Console.WriteLine("2. Technology");
+            var categoryInput = Dialogs.Prompt("Enter Category option: ");
+            if (int.TryParse(categoryInput, out int categoryValue) && Enum.IsDefined(typeof(Category), categoryValue - 1))
+            {
+                category = (Category)(categoryValue - 1);
+                break;
+            }
+            else
+            {
+                Console.WriteLine();
+                Console.WriteLine("Please enter a valid category option. Press any key.");
+                Console.WriteLine();
+                Console.ReadKey();
+            }
+        }
+
+        var product = new Product { Title = title, Price = priceValue, Category = category };
 
         var result = _productService.CreateProduct(product);
 
