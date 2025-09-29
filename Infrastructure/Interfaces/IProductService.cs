@@ -8,6 +8,7 @@ public interface IProductService
     Task<ResponseResult<IEnumerable<Product>>> LoadProductsAsync();
     Task<ResponseResult<bool>> SaveProductsAsync();
     ResponseResult<bool> CreateProduct(Product product);
-    ResponseResult<bool> UpdateProduct(string id);
+    Task<ResponseResult<bool>> RemoveProduct(string id);
+    Task<ResponseResult<bool>> UpdateProduct(string id);
 }
 

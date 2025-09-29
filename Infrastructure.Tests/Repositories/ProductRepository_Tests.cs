@@ -92,7 +92,7 @@ public class ProductRepository_Tests
         productRepository.AddProductToList(product2);
 
         // act
-        var foundProduct = productRepository.GetProductById(product2.Id);
+        var foundProduct = productRepository.GetProductByIdFromList(product2.Id);
 
         // assert
         Assert.NotNull(foundProduct);
@@ -110,9 +110,41 @@ public class ProductRepository_Tests
         productRepository.AddProductToList(product);
 
         // act
-        var foundProduct = productRepository.GetProductById("999");
+        var foundProduct = productRepository.GetProductByIdFromList("999");
 
         // assert
         Assert.Null(foundProduct);
+    }
+
+    [Fact]
+    public void ProductRepository_RemoveProductFromList_ShouldRemoveProduct()
+    {
+        // arrange
+        var productRepository = new ProductRepository();
+        var product = ProductFactory.Create("Test Product", 10.99m, GetTestCategory(), GetTestManufacturer());
+        productRepository.AddProductToList(product);
+
+        // act
+        var removedCount = productRepository.RemoveProductFromList(product.Id);
+
+        // assert
+        Assert.Equal(1, removedCount);
+        Assert.Empty(productRepository.GetProductsFromList());
+    }
+
+    [Fact]
+    public void ProductRepository_RemoveProductFromList_ShouldReturnZeroIfNotFound()
+    {
+        // arrange
+        var productRepository = new ProductRepository();
+        var product = ProductFactory.Create("Test Product", 10.99m, GetTestCategory(), GetTestManufacturer());
+        productRepository.AddProductToList(product);
+
+        // act
+        var removedCount = productRepository.RemoveProductFromList("nonexistent-id");
+
+        // assert
+        Assert.Equal(0, removedCount);
+        Assert.Single(productRepository.GetProductsFromList());
     }
 }

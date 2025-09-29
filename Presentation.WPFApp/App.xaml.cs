@@ -43,12 +43,11 @@ public partial class App : Application
     }
 
 
-    protected override async void OnStartup(StartupEventArgs e)
+    protected override void OnStartup(StartupEventArgs e)
     {
         base.OnStartup(e);
 
         var productService = _host.Services.GetRequiredService<IProductService>();
-        await productService.LoadProductsAsync();
 
         var mainViewModel = _host.Services.GetRequiredService<MainViewModel>();
         mainViewModel.CurrentViewModel = _host.Services.GetRequiredService<ListProductViewModel>();

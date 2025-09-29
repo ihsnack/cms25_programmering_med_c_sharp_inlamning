@@ -5,6 +5,7 @@ namespace Infrastructure.Interfaces;
 public interface IProductRepository
 {
     void AddProductToList(Product product);
-    Product GetProductById(string id);
+    Product GetProductByIdFromList(string id);
     IEnumerable<Product> GetProductsFromList();
+    int RemoveProductFromList(string id);
 }

@@ -1,4 +1,5 @@
 ﻿using System.Text.Json;
+using System.Threading.Tasks;
 using Infrastructure.Factories;
 using Infrastructure.Interfaces;
 using Infrastructure.Models;
@@ -224,12 +225,12 @@ public class ProductService(IProductRepository productRepository, IFileService f
             };
         }
     }
-    public ResponseResult<bool> UpdateProduct(string id)
+    public async Task<ResponseResult<bool>> UpdateProduct(string id)
     {
 
         try
         {
-            var productToUpdate = _productRepository.GetProductById(id);
+            var productToUpdate = _productRepository.GetProductByIdFromList(id);
 
             if (productToUpdate == null)
             {
@@ -243,6 +244,8 @@ public class ProductService(IProductRepository productRepository, IFileService f
 
             productToUpdate.Title = productToUpdate.Title;
             productToUpdate.Price = productToUpdate.Price;
+
+            await SaveProductsAsync();
 
 
             return new ResponseResult<bool>
@@ -261,6 +264,45 @@ public class ProductService(IProductRepository productRepository, IFileService f
             };
         }
 
+
+    }
+
+    public async Task<ResponseResult<bool>> RemoveProduct(string id)
+    {
+
+        try
+        {
+            var result = _productRepository.RemoveProductFromList(id);
+
+            if (result > 0)
+            {
+
+                await SaveProductsAsync();
+
+                return new ResponseResult<bool>
+                {
+                    Success = true,
+                    Message = "Removed product successfully.",
+                };
+            }
+            else
+            {
+                return new ResponseResult<bool>
+                {
+                    Success = false,
+                    Message = "Could not find product to remove.",
+                };
+            }
+        }
+        catch (Exception)
+        {
+
+            return new ResponseResult<bool>
+            {
+                Success = false,
+                Message = "Could not perform removal of product.",
+            };
+        }
 
     }
 }
