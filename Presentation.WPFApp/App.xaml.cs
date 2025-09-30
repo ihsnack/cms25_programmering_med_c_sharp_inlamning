@@ -20,9 +20,9 @@ public partial class App : Application
             .ConfigureServices(services =>
             {
                 services.AddSingleton<IFileRepository, FileRepository>();
-                services.AddScoped<IFileService, FileService>();
-                services.AddScoped<IProductRepository, ProductRepository>();
-                services.AddScoped<IProductService, ProductService>();
+                services.AddSingleton<IFileService, FileService>();
+                services.AddSingleton<IProductRepository, ProductRepository>();
+                services.AddSingleton<IProductService, ProductService>();
 
                 services.AddSingleton<MainWindow>();
                 services.AddSingleton<MainViewModel>();
@@ -33,11 +33,11 @@ public partial class App : Application
                 services.AddTransient<ProductAddViewModel>();
                 services.AddTransient<ProductAddView>();
 
-                services.AddSingleton<ProductDetailsViewModel>();
-                services.AddSingleton<ProductDetailsView>();
+                services.AddTransient<ProductDetailsViewModel>();
+                services.AddTransient<ProductDetailsView>();
 
-                services.AddSingleton<ProductEditViewModel>();
-                services.AddSingleton<ProductEditView>();
+                services.AddTransient<ProductEditViewModel>();
+                services.AddTransient<ProductEditView>();
             })
             .Build();
     }
