@@ -561,10 +561,11 @@ public class ProductService_Tests
         var fileServiceMock = new Mock<IFileService>();
         var productRepositoryMock = new Mock<IProductRepository>();
         var productService = new ProductService(productRepositoryMock.Object, fileServiceMock.Object);
+        var notFoundProduct = new Product { Id = "notfound", Title = "Test", Price = 1, Category = new Category { Name = "Test" }, Manufacturer = new Manufacturer { Name = "Test" } };
         productRepositoryMock.Setup(pr => pr.GetProductByIdFromList("notfound")).Returns((Product)null!);
 
         // act
-        var response = await productService.UpdateProduct("notfound");
+        var response = await productService.UpdateProductAsync(notFoundProduct);
 
         // assert
         Assert.False(response.Success);
@@ -582,7 +583,7 @@ public class ProductService_Tests
         productRepositoryMock.Setup(pr => pr.GetProductByIdFromList(product.Id)).Returns(product);
 
         // act
-        var response = await productService.UpdateProduct(product.Id);
+        var response = await productService.UpdateProductAsync(product);
 
         // assert
         Assert.True(response.Success);

@@ -65,17 +65,29 @@ public class ProductService(IProductRepository productRepository, IFileService f
                         Message = "Product has an invalid negative price. File load aborted."
                     };
                 }
-            }
 
-            var productList = _productRepository.GetProductsFromList();
 
-            foreach (var product in fileProducts)
-            {
-                if (!productList.Any(x => x.Title?.Equals(product.Title, StringComparison.OrdinalIgnoreCase) == true))
+                if (string.IsNullOrWhiteSpace(product.Category.Name))
                 {
-                    _productRepository.AddProductToList(product);
+                    return new ResponseResult<IEnumerable<Product>>
+                    {
+                        Success = false,
+                        Message = "Product category name needs to be provided. File load aborted.",
+
+                    };
+                }
+
+                if (string.IsNullOrWhiteSpace(product.Manufacturer.Name))
+                {
+                    return new ResponseResult<IEnumerable<Product>>
+                    {
+                        Success = false,
+                        Message = "Product manufacturer name needs to be provided. File load aborted.",
+                    };
                 }
             }
+
+            _productRepository.SetProductsToList(fileProducts);
 
             var updatedProductList = _productRepository.GetProductsFromList();
 

@@ -11,6 +11,11 @@ public class ProductRepository : IProductRepository
     {
         _products.Add(product);
     }
+    public void SetProductsToList(IEnumerable<Product> products)
+    {
+        _products.Clear();
+        _products.AddRange(products);
+    }
 
     public IEnumerable<Product> GetProductsFromList()
     {

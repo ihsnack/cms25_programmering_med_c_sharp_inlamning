@@ -8,4 +8,5 @@ public interface IProductRepository
     Product GetProductByIdFromList(string id);
     IEnumerable<Product> GetProductsFromList();
     int RemoveProductFromList(string id);
+    void SetProductsToList(IEnumerable<Product> products);
 }
