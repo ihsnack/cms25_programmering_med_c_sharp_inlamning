@@ -177,7 +177,7 @@ public class ProductService(IProductRepository productRepository, IFileService f
         }
     }
 
-    public ResponseResult<bool> CreateProduct(Product product)
+    public async Task<ResponseResult<bool>> CreateProduct(Product product)
     {
         if (product == null)
         {
@@ -241,6 +241,8 @@ public class ProductService(IProductRepository productRepository, IFileService f
         {
             var newProduct = ProductFactory.Create(product.Title, product.Price, product.Category, product.Manufacturer);
             _productRepository.AddProductToList(newProduct);
+
+            await SaveProductsAsync();
             return new ResponseResult<bool>
             {
                 Success = true,

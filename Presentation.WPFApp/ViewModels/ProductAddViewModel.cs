@@ -14,8 +14,8 @@ public partial class ProductAddViewModel(IServiceProvider serviceProvider, IProd
     [ObservableProperty]
     public Product _product = new()
     {
+        Category = new Category(),
         Manufacturer = new Manufacturer(),
-        Category = new Category()
     };
 
     [ObservableProperty]
@@ -30,16 +30,14 @@ public partial class ProductAddViewModel(IServiceProvider serviceProvider, IProd
     }
 
     [RelayCommand]
-    public void SaveProduct()
+    public async Task SaveProduct()
     {
 
         ErrorMessage = null!;
 
-        var category = new Category { Name = Product.Manufacturer.Name };
-        var manufacturer = new Manufacturer { Name = Product.Category.Name };
-        var productInstance = ProductFactory.Create(Product.Title, Product.Price, category, manufacturer);
+        var productInstance = ProductFactory.Create(Product.Title, Product.Price, Product.Category, Product.Manufacturer);
 
-        var response = _productService.CreateProduct(productInstance);
+        var response = await _productService.CreateProduct(productInstance);
 
         if (!response.Success)
         {
