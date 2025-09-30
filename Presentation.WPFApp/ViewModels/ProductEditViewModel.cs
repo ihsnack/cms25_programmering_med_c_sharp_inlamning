@@ -12,11 +12,7 @@ public partial class ProductEditViewModel(IServiceProvider serviceProvider, IPro
     private readonly IProductService _productService = productService;
 
     [ObservableProperty]
-    public Product _product = new()
-    {
-        Manufacturer = new Manufacturer(),
-        Category = new Category()
-    };
+    public Product _product = new();
 
     [ObservableProperty]
     public string _errorMessage = null!;
