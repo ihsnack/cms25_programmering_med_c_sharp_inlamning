@@ -195,6 +195,26 @@ public class ProductService(IProductRepository productRepository, IFileService f
             };
         }
 
+        if (string.IsNullOrWhiteSpace(product.Category.Name))
+        {
+            return new ResponseResult<bool>
+            {
+                Success = false,
+                Message = "Product category name needs to be provided",
+                Result = false
+            };
+        }
+
+        if (string.IsNullOrWhiteSpace(product.Manufacturer.Name))
+        {
+            return new ResponseResult<bool>
+            {
+                Success = false,
+                Message = "Product manufacturer name needs to be provided",
+                Result = false
+            };
+        }
+
         var products = _productRepository.GetProductsFromList();
         if (products.Any(p => p.Title.Equals(product.Title, StringComparison.OrdinalIgnoreCase)))
         {
@@ -256,6 +276,27 @@ public class ProductService(IProductRepository productRepository, IFileService f
                 Result = false
             };
         }
+
+        if (string.IsNullOrWhiteSpace(product.Category.Name))
+        {
+            return new ResponseResult<bool>
+            {
+                Success = false,
+                Message = "Product category name needs to be provided",
+                Result = false
+            };
+        }
+
+        if (string.IsNullOrWhiteSpace(product.Manufacturer.Name))
+        {
+            return new ResponseResult<bool>
+            {
+                Success = false,
+                Message = "Product manufacturer name needs to be provided",
+                Result = false
+            };
+        }
+
 
         try
         {
