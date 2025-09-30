@@ -56,15 +56,13 @@ public class ProductService_Tests
             .Returns(new List<Product>())
             .Returns(new List<Product> { fileProduct });
 
-        productRepositoryMock.Setup(pr => pr.AddProductToList(It.IsAny<Product>())).Verifiable();
-
         // act
         var response = await productService.LoadProductsAsync();
 
         // assert
         Assert.True(response.Success);
         Assert.Equal("Products loaded successfully from file.", response.Message);
-        productRepositoryMock.Verify(pr => pr.AddProductToList(It.IsAny<Product>()), Times.Once);
+        productRepositoryMock.Verify(pr => pr.SetProductsToList(It.Is<IEnumerable<Product>>(products => products.SequenceEqual(fileProducts))), Times.Once);
     }
 
     [Fact]
@@ -157,43 +155,6 @@ public class ProductService_Tests
         // assert
         Assert.False(response.Success);
         Assert.Equal("Invalid JSON", response.Message);
-    }
-
-    [Fact]
-    public async Task ProductService_LoadProducts_ShouldSkipDuplicateProducts()
-    {
-        // arrange
-        var fileServiceMock = new Mock<IFileService>();
-        var productRepositoryMock = new Mock<IProductRepository>();
-        var productService = new ProductService(productRepositoryMock.Object, fileServiceMock.Object);
-
-        var existingProduct = ProductFactory.Create("Existing Product", 10.99m, GetTestCategory(), GetTestManufacturer());
-        var duplicateProduct = ProductFactory.Create("Existing Product", 15.99m, GetTestCategory(), GetTestManufacturer());
-        var newProduct = ProductFactory.Create("New Product", 20.99m, GetTestCategory(), GetTestManufacturer());
-
-        var fileProducts = new List<Product> { duplicateProduct, newProduct };
-        var existingProducts = new List<Product> { existingProduct };
-
-        fileServiceMock.Setup(fs => fs.LoadFromFileAsync()).ReturnsAsync(new ResponseResult<IEnumerable<Product>>
-        {
-            Success = true,
-            Result = fileProducts
-        });
-
-        productRepositoryMock.SetupSequence(pr => pr.GetProductsFromList())
-            .Returns(existingProducts)
-            .Returns(new List<Product> { existingProduct, newProduct });
-
-        productRepositoryMock.Setup(pr => pr.AddProductToList(It.IsAny<Product>())).Verifiable();
-
-        // act
-        var response = await productService.LoadProductsAsync();
-
-        // assert
-        Assert.True(response.Success);
-        Assert.Equal("Products loaded successfully from file.", response.Message);
-        productRepositoryMock.Verify(pr => pr.AddProductToList(newProduct), Times.Once);
-        productRepositoryMock.Verify(pr => pr.AddProductToList(It.Is<Product>(p => p.Title == "Existing Product")), Times.Never);
     }
 
     [Fact]
@@ -318,21 +279,21 @@ public class ProductService_Tests
     }
 
     [Fact]
-    public void ProductService_CreateProduct_ShouldReturnFalse_WhenProductIsNull()
+    public async Task ProductService_CreateProduct_ShouldReturnFalse_WhenProductIsNull()
     {
         // arrange
         var fileServiceMock = new Mock<IFileService>();
         var productRepositoryMock = new Mock<IProductRepository>();
         var productService = new ProductService(productRepositoryMock.Object, fileServiceMock.Object);
         // act
-        var response = productService.CreateProduct(null!);
+        var response = await productService.CreateProduct(null!);
         // assert
         Assert.False(response.Success);
         Assert.Equal("Product cannot be null.", response.Message);
     }
 
     [Fact]
-    public void ProductService_CreateProduct_ShouldReturnFalse_WhenProductTitleIsNull()
+    public async Task ProductService_CreateProduct_ShouldReturnFalse_WhenProductTitleIsNull()
     {
         // arrange
         var fileServiceMock = new Mock<IFileService>();
@@ -340,14 +301,14 @@ public class ProductService_Tests
         var productService = new ProductService(productRepositoryMock.Object, fileServiceMock.Object);
         var product = ProductFactory.Create(null!, 10.99m, GetTestCategory(), GetTestManufacturer());
         // act
-        var response = productService.CreateProduct(product);
+        var response = await productService.CreateProduct(product);
         // assert
         Assert.False(response.Success);
         Assert.Equal("Product title cannot be empty or whitespace.", response.Message);
     }
 
     [Fact]
-    public void ProductService_CreateProduct_ShouldReturnFalse_WhenProductTitleIsEmpty()
+    public async Task ProductService_CreateProduct_ShouldReturnFalse_WhenProductTitleIsEmpty()
     {
         // arrange
         var fileServiceMock = new Mock<IFileService>();
@@ -355,14 +316,14 @@ public class ProductService_Tests
         var productService = new ProductService(productRepositoryMock.Object, fileServiceMock.Object);
         var product = ProductFactory.Create("", 10.99m, GetTestCategory(), GetTestManufacturer());
         // act
-        var response = productService.CreateProduct(product);
+        var response = await productService.CreateProduct(product);
         // assert
         Assert.False(response.Success);
         Assert.Equal("Product title cannot be empty or whitespace.", response.Message);
     }
 
     [Fact]
-    public void ProductService_CreateProduct_ShouldReturnFalse_WhenProductPriceIsNegative()
+    public async Task ProductService_CreateProduct_ShouldReturnFalse_WhenProductPriceIsNegative()
     {
         // arrange
         var fileServiceMock = new Mock<IFileService>();
@@ -370,14 +331,14 @@ public class ProductService_Tests
         var productService = new ProductService(productRepositoryMock.Object, fileServiceMock.Object);
         var product = ProductFactory.Create("Jacket", -10.99m, GetTestCategory(), GetTestManufacturer());
         // act
-        var response = productService.CreateProduct(product);
+        var response = await productService.CreateProduct(product);
         // assert
         Assert.False(response.Success);
         Assert.Equal("Product price cannot be negative.", response.Message);
     }
 
     [Fact]
-    public void ProductService_CreateProduct_ShouldReturnTrue_WhenProductIsCreated()
+    public async Task ProductService_CreateProduct_ShouldReturnTrue_WhenProductIsCreated()
     {
         // arrange
         var fileServiceMock = new Mock<IFileService>();
@@ -386,16 +347,16 @@ public class ProductService_Tests
         var product = ProductFactory.Create("Jacket", 10.99m, GetTestCategory(), GetTestManufacturer());
         productRepositoryMock.Setup(pr => pr.GetProductsFromList()).Returns(new List<Product>());
         // act
-        var response = productService.CreateProduct(product);
+        var response = await productService.CreateProduct(product);
         // assert
         Assert.True(response.Success);
         Assert.Equal("Product was created successfully.", response.Message);
-        productRepositoryMock.Verify(pr => pr.GetProductsFromList(), Times.Once);
+        productRepositoryMock.Verify(pr => pr.GetProductsFromList(), Times.Exactly(2));
         productRepositoryMock.Verify(pr => pr.AddProductToList(It.Is<Product>(p => p.Title == "Jacket" && p.Price == 10.99m)), Times.Once);
     }
 
     [Fact]
-    public void ProductService_CreateProduct_ShouldReturnFalse_WhenProductIsWithSameTitleExists()
+    public async Task ProductService_CreateProduct_ShouldReturnFalse_WhenProductIsWithSameTitleExists()
     {
         // arrange
         var fileServiceMock = new Mock<IFileService>();
@@ -406,7 +367,7 @@ public class ProductService_Tests
         productRepositoryMock.Setup(pr => pr.GetProductsFromList()).Returns(existingProductsList);
         var productDuplicate = ProductFactory.Create("Jacket", 10.99m, GetTestCategory(), GetTestManufacturer());
         // act
-        var response = productService.CreateProduct(productDuplicate);
+        var response = await productService.CreateProduct(productDuplicate);
         // assert
         Assert.False(response.Success);
         Assert.Equal("A product with the same name already exists.", response.Message);
@@ -414,7 +375,7 @@ public class ProductService_Tests
     }
 
     [Fact]
-    public void ProductService_CreateProduct_ShouldCatchIfErrorIsThrow()
+    public async Task ProductService_CreateProduct_ShouldCatchIfErrorIsThrow()
     {
         // arrange
         var fileServiceMock = new Mock<IFileService>();
@@ -424,7 +385,7 @@ public class ProductService_Tests
         productRepositoryMock.Setup(pr => pr.GetProductsFromList()).Returns(new List<Product>());
         productRepositoryMock.Setup(pr => pr.AddProductToList(It.IsAny<Product>())).Throws(new Exception("Unknown Error."));
         // act
-        var response = productService.CreateProduct(product);
+        var response = await productService.CreateProduct(product);
         // assert
         Assert.False(response.Success);
         Assert.Equal("Unknown Error.", response.Message);
@@ -433,7 +394,7 @@ public class ProductService_Tests
     }
 
     [Fact]
-    public void ProductService_CreateProduct_ShouldGenerateProductWithId()
+    public async Task ProductService_CreateProduct_ShouldGenerateProductWithId()
     {
         // arrange
         var fileServiceMock = new Mock<IFileService>();
@@ -445,7 +406,7 @@ public class ProductService_Tests
         productRepositoryMock.Setup(pr => pr.AddProductToList(It.IsAny<Product>()))
             .Callback<Product>(p => addedProduct = p);
         // act
-        var response = productService.CreateProduct(product);
+        var response = await productService.CreateProduct(product);
         // assert
         Assert.True(response.Success);
         Assert.NotNull(addedProduct);
@@ -453,7 +414,7 @@ public class ProductService_Tests
     }
 
     [Fact]
-    public void ProductService_CreateProduct_ShouldReturnFalse_WhenProductTitleIsCaseInsensitiveDuplicate()
+    public async Task ProductService_CreateProduct_ShouldReturnFalse_WhenProductTitleIsCaseInsensitiveDuplicate()
     {
         // arrange
         var fileServiceMock = new Mock<IFileService>();
@@ -464,14 +425,14 @@ public class ProductService_Tests
         productRepositoryMock.Setup(pr => pr.GetProductsFromList()).Returns(existingProductsList);
         var productDuplicate = ProductFactory.Create("jAcKeT", 10.99m, GetTestCategory(), GetTestManufacturer());
         // act
-        var response = productService.CreateProduct(productDuplicate);
+        var response = await productService.CreateProduct(productDuplicate);
         // assert
         Assert.False(response.Success);
         Assert.Equal("A product with the same name already exists.", response.Message);
     }
 
     [Fact]
-    public void ProductService_CreateProduct_ShouldReturnFalse_WhenProductTitleIsWhitespaceOnly()
+    public async Task ProductService_CreateProduct_ShouldReturnFalse_WhenProductTitleIsWhitespaceOnly()
     {
         // arrange
         var fileServiceMock = new Mock<IFileService>();
@@ -479,14 +440,14 @@ public class ProductService_Tests
         var productService = new ProductService(productRepositoryMock.Object, fileServiceMock.Object);
         var product = ProductFactory.Create("   ", 10.99m, GetTestCategory(), GetTestManufacturer());
         // act
-        var response = productService.CreateProduct(product);
+        var response = await productService.CreateProduct(product);
         // assert
         Assert.False(response.Success);
         Assert.Equal("Product title cannot be empty or whitespace.", response.Message);
     }
 
     [Fact]
-    public void ProductService_CreateProduct_ShouldGenerateProductWithGuidIdFormat()
+    public async Task ProductService_CreateProduct_ShouldGenerateProductWithGuidIdFormat()
     {
         // arrange
         var fileServiceMock = new Mock<IFileService>();
@@ -498,7 +459,7 @@ public class ProductService_Tests
         productRepositoryMock.Setup(pr => pr.AddProductToList(It.IsAny<Product>()))
             .Callback<Product>(p => addedProduct = p);
         // act
-        var response = productService.CreateProduct(product);
+        var response = await productService.CreateProduct(product);
         // assert
         Assert.True(response.Success);
         Assert.NotNull(addedProduct);
@@ -536,7 +497,7 @@ public class ProductService_Tests
         Assert.True(response.Success);
         Assert.Equal("Products retrieved successfully.", response.Message);
         Assert.Single(response.Result!);
-        Assert.Equal("Test", response.Result.First().Title);
+        Assert.Equal("Test", response.Result!.First().Title);
     }
 
     [Fact]
@@ -561,10 +522,11 @@ public class ProductService_Tests
         var fileServiceMock = new Mock<IFileService>();
         var productRepositoryMock = new Mock<IProductRepository>();
         var productService = new ProductService(productRepositoryMock.Object, fileServiceMock.Object);
+        var notFoundProduct = new Product { Id = "notfound", Title = "Test", Price = 1, Category = new Category { Name = "Test" }, Manufacturer = new Manufacturer { Name = "Test" } };
         productRepositoryMock.Setup(pr => pr.GetProductByIdFromList("notfound")).Returns((Product)null!);
 
         // act
-        var response = await productService.UpdateProduct("notfound");
+        var response = await productService.UpdateProductAsync(notFoundProduct);
 
         // assert
         Assert.False(response.Success);
@@ -582,7 +544,7 @@ public class ProductService_Tests
         productRepositoryMock.Setup(pr => pr.GetProductByIdFromList(product.Id)).Returns(product);
 
         // act
-        var response = await productService.UpdateProduct(product.Id);
+        var response = await productService.UpdateProductAsync(product);
 
         // assert
         Assert.True(response.Success);

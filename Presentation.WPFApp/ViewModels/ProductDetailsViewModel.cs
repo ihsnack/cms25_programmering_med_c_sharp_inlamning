@@ -13,11 +13,7 @@ public partial class ProductDetailsViewModel(IServiceProvider serviceProvider, I
     private readonly IProductService _productService = productService;
 
     [ObservableProperty]
-    public Product _product = new()
-    {
-        Manufacturer = new Manufacturer(),
-        Category = new Category()
-    };
+    public Product _product = new();
 
     [RelayCommand]
     public void NavigateToList()
@@ -33,7 +29,7 @@ public partial class ProductDetailsViewModel(IServiceProvider serviceProvider, I
         productEditView.Product = Product;
 
         var mainViewModel = _serviceProvider.GetRequiredService<MainViewModel>();
-        mainViewModel.CurrentViewModel = _serviceProvider.GetRequiredService<ProductEditViewModel>();
+        mainViewModel.CurrentViewModel = productEditView;
     }
 
     [RelayCommand]

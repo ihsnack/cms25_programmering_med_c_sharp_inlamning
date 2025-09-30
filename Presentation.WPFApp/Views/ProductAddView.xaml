@@ -15,9 +15,12 @@
             <RowDefinition Height="Auto" />
             <RowDefinition Height="Auto" />
             <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
         </Grid.RowDefinitions>
-        <TextBlock Text="New User" Padding="5" FontSize="20" FontWeight="Bold" />
-        <StackPanel Grid.Row="1">
+        <TextBlock Text="New Product" Padding="5" FontSize="20" FontWeight="Bold" Grid.Row="0" />
+        <TextBlock Text="{Binding ErrorMessage}" Padding="5" Grid.Row="1" Foreground="Red" />
+        <StackPanel Grid.Row="2">
             <Label Content="Title" Margin="0 5 0 0" />
             <TextBox x:Name="Title" Text="{Binding Product.Title}" Padding="5" />
             <Label Content="Price" Margin="0 5 0 0" />

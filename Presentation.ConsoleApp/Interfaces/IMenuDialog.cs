@@ -2,7 +2,7 @@
 {
     public interface IMenuDialogs
     {
-        void AddProductDialogAsync();
+        Task AddProductDialogAsync();
         Task MenuOptionsDialogAsync();
         Task ViewLoadProductsFromFileAsync();
         Task ViewSaveListToFileAsync();

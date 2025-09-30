@@ -31,7 +31,7 @@ public class MenuDialogs : IMenuDialogs
             switch (option)
             {
                 case "1":
-                    AddProductDialogAsync();
+                    await AddProductDialogAsync();
                     break;
                 case "2":
                     ViewProductsDialogAsync();
@@ -55,7 +55,7 @@ public class MenuDialogs : IMenuDialogs
         }
     }
 
-    public void AddProductDialogAsync()
+    public async Task AddProductDialogAsync()
     {
         Dialogs.MenuHeading("NEW PRODUCT");
 
@@ -130,7 +130,7 @@ public class MenuDialogs : IMenuDialogs
 
         var product = new Product { Title = title, Price = priceValue, Category = category, Manufacturer = manufacturer };
 
-        var result = _productService.CreateProduct(product);
+        var result = await _productService.CreateProduct(product);
 
         Console.WriteLine();
         Console.WriteLine($"{result.Message} Press any key.");

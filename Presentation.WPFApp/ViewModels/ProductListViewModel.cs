@@ -44,6 +44,6 @@ public partial class ProductListViewModel : ObservableObject
         productDetailsView.Product = product;
 
         var mainViewModel = _serviceProvider.GetRequiredService<MainViewModel>();
-        mainViewModel.CurrentViewModel = _serviceProvider.GetRequiredService<ProductDetailsViewModel>();
+        mainViewModel.CurrentViewModel = productDetailsView;
     }
 }
