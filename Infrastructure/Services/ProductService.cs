@@ -194,6 +194,7 @@ public class ProductService(IProductRepository productRepository, IFileService f
                 Result = false
             };
         }
+
         var products = _productRepository.GetProductsFromList();
         if (products.Any(p => p.Title.Equals(product.Title, StringComparison.OrdinalIgnoreCase)))
         {
@@ -225,12 +226,40 @@ public class ProductService(IProductRepository productRepository, IFileService f
             };
         }
     }
-    public async Task<ResponseResult<bool>> UpdateProduct(string id)
+    public async Task<ResponseResult<bool>> UpdateProductAsync(Product product)
     {
+
+        if (product == null)
+        {
+            return new ResponseResult<bool>
+            {
+                Success = false,
+                Message = "Product cannot be null.",
+                Result = false
+            };
+        }
+        if (string.IsNullOrWhiteSpace(product.Title))
+        {
+            return new ResponseResult<bool>
+            {
+                Success = false,
+                Message = "Product title cannot be empty or whitespace.",
+                Result = false
+            };
+        }
+        if (product.Price < 0)
+        {
+            return new ResponseResult<bool>
+            {
+                Success = false,
+                Message = "Product price cannot be negative.",
+                Result = false
+            };
+        }
 
         try
         {
-            var productToUpdate = _productRepository.GetProductByIdFromList(id);
+            var productToUpdate = _productRepository.GetProductByIdFromList(product.Id);
 
             if (productToUpdate == null)
             {

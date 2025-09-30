@@ -9,6 +9,6 @@ public interface IProductService
     Task<ResponseResult<bool>> SaveProductsAsync();
     ResponseResult<bool> CreateProduct(Product product);
     Task<ResponseResult<bool>> RemoveProduct(string id);
-    Task<ResponseResult<bool>> UpdateProduct(string id);
+    Task<ResponseResult<bool>> UpdateProductAsync(Product product);
 }
 

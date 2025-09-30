@@ -6,7 +6,7 @@
              xmlns:local="clr-namespace:Presentation.WPFApp.Views"
              mc:Ignorable="d" 
              Background="white"
-             d:DataContext="{d:DesignInstance Type=viewmodels:EditProductViewModel}"
+             d:DataContext="{d:DesignInstance Type=viewmodels:ProductEditViewModel}"
              xmlns:viewmodels="clr-namespace:Presentation.WPFApp.ViewModels"
              xmlns:models="clr-namespace:Infrastructure.Models;assembly=Infrastructure"
              d:DesignHeight="800" d:DesignWidth="800">

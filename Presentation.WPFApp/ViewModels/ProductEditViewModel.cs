@@ -18,6 +18,9 @@ public partial class ProductEditViewModel(IServiceProvider serviceProvider, IPro
         Category = new Category()
     };
 
+    [ObservableProperty]
+    public string _errorMessage = null!;
+
     [RelayCommand]
     public void NavigateToList()
     {
@@ -26,9 +29,15 @@ public partial class ProductEditViewModel(IServiceProvider serviceProvider, IPro
     }
 
     [RelayCommand]
-    public void Save()
+    public async Task Save()
     {
-        _productService.UpdateProduct(Product.Id);
+        var response = await _productService.UpdateProductAsync(Product);
+
+        if (!response.Success)
+        {
+            ErrorMessage = response.Message!;
+            return;
+        }
 
         NavigateToList();
 
