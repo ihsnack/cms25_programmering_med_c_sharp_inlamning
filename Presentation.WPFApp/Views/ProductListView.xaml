@@ -23,29 +23,22 @@
             </Grid.ColumnDefinitions>
 
             <TextBlock Text="Product List" Padding="5" FontSize="20" FontWeight="Bold" HorizontalAlignment="Left" Grid.Column="0" />
-            <Button Content="New Product" Command="{Binding NavigateToAddProductCommand}" HorizontalAlignment="Right" Grid.Column="1" />
+            <Button Content="&#xE710;" Padding="12" FontFamily="Segoe MDL2 Assets" Command="{Binding NavigateToAddProductCommand}" HorizontalAlignment="Right" Grid.Column="1" />
         </Grid>
-        <ListView Grid.Row="1" ItemsSource="{Binding ProductList}" Margin="0 20 0 0">
+        <ListView Grid.Row="1" ItemsSource="{Binding ProductList}" Margin="0 20 0 0" HorizontalContentAlignment="Stretch">
             <ListView.ItemTemplate>
                 <DataTemplate DataType="{x:Type models:Product}">
-                    <Grid HorizontalAlignment="Stretch" VerticalAlignment="Center">
-                        <Grid.RowDefinitions>
-                            <RowDefinition Height="auto"  />
-                            <RowDefinition Height="auto" />
-                            <RowDefinition Height="auto" />
-                            <RowDefinition Height="auto" />
-                            <RowDefinition Height="auto" />
-                        </Grid.RowDefinitions>
+                    <Grid HorizontalAlignment="Stretch">
                         <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="auto" />
                             <ColumnDefinition Width="auto" />
                             <ColumnDefinition Width="*" />
                         </Grid.ColumnDefinitions>
-
-                        <TextBlock Grid.Row="0" Grid.Column="0" Text="{Binding Title}" />
-                        <TextBlock Grid.Row="1" Grid.Column="0" Text="{Binding Price}" />
-                        <TextBlock Grid.Row="2" Grid.Column="0" Text="{Binding Category.Name}" />
-                        <TextBlock Grid.Row="3" Grid.Column="0" Text="{Binding Manufacturer.Name}" />
-                        <Button Grid.Row="4" Content="Show" Grid.Column="1" CommandParameter="{Binding .}" Command="{Binding DataContext.NavigateToProductDetailsCommand, RelativeSource={RelativeSource AncestorType=UserControl}}" HorizontalAlignment="Right" />
+                        
+                        
+                        <TextBlock  Grid.Column="0" Text="{Binding Title}" FontWeight="Bold" Margin="0 17 7 0" />
+                        <TextBlock  Grid.Column="1" Text="{Binding Price}" Margin="0 17 0 17" />
+                        <Button FontFamily="Segoe MDL2 Assets" Content="&#xE712;" Grid.Column="2" CommandParameter="{Binding .}" Command="{Binding DataContext.NavigateToProductDetailsCommand, RelativeSource={RelativeSource AncestorType=UserControl}}" HorizontalAlignment="Right" Padding="12" />
                     </Grid>
                 </DataTemplate>
             </ListView.ItemTemplate>
