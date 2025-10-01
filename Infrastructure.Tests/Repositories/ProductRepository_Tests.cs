@@ -5,6 +5,9 @@ using Xunit;
 
 namespace Infrastructure.Tests.Repositories;
 
+/// <summary>
+/// I've used Copilot to improve these tests and asked it adjust tests after refactorings
+/// </summary>
 public class ProductRepository_Tests
 {
     private Category GetTestCategory() => new Category { Name = "Clothes" };
@@ -82,42 +85,68 @@ public class ProductRepository_Tests
     }
 
     [Fact]
-    public void ProductRepository_GetProductById_ShouldReturnCorrectProduct()
+    public void ProductRepository_SetProductsToList_ShouldReplaceAllProducts()
+    {
+        // arrange
+        var productRepository = new ProductRepository();
+        var initialProduct = ProductFactory.Create("Initial Product", 5.99m, GetTestCategory(), GetTestManufacturer());
+        productRepository.AddProductToList(initialProduct);
+
+        var newProducts = new List<Product>
+        {
+            ProductFactory.Create("New Product 1", 10.99m, GetTestCategory(), GetTestManufacturer()),
+            ProductFactory.Create("New Product 2", 15.99m, GetTestCategory(), GetTestManufacturer())
+        };
+
+        // act
+        productRepository.SetProductsToList(newProducts);
+        var response = productRepository.GetProductsFromList().ToList();
+
+        // assert
+        Assert.Equal(2, response.Count);
+        Assert.DoesNotContain(initialProduct, response);
+        Assert.Contains(newProducts[0], response);
+        Assert.Contains(newProducts[1], response);
+    }
+
+    [Fact]
+    public void ProductRepository_SetProductsToList_ShouldHandleEmptyList()
+    {
+        // arrange
+        var productRepository = new ProductRepository();
+        var initialProduct = ProductFactory.Create("Initial Product", 5.99m, GetTestCategory(), GetTestManufacturer());
+        productRepository.AddProductToList(initialProduct);
+
+        // act
+        productRepository.SetProductsToList(new List<Product>());
+        var response = productRepository.GetProductsFromList();
+
+        // assert
+        Assert.Empty(response);
+    }
+
+    [Fact]
+    public void ProductRepository_GetProductByIdFromList_ShouldReturnCorrectProduct()
     {
         // arrange
         var productRepository = new ProductRepository();
         var product1 = ProductFactory.Create("Product 1", 5.99m, GetTestCategory(), GetTestManufacturer());
         var product2 = ProductFactory.Create("Product 2", 15.99m, GetTestCategory(), GetTestManufacturer());
+
         productRepository.AddProductToList(product1);
         productRepository.AddProductToList(product2);
 
         // act
-        var foundProduct = productRepository.GetProductByIdFromList(product2.Id);
+        var result = productRepository.GetProductByIdFromList(product1.Id);
 
         // assert
-        Assert.NotNull(foundProduct);
-        Assert.Equal(product2.Id, foundProduct.Id);
-        Assert.Equal("Product 2", foundProduct.Title);
-        Assert.Equal(15.99m, foundProduct.Price);
+        Assert.NotNull(result);
+        Assert.Equal(product1.Id, result.Id);
+        Assert.Equal(product1.Title, result.Title);
     }
 
     [Fact]
-    public void ProductRepository_GetProductById_ShouldReturnNullIfNotFound()
-    {
-        // arrange
-        var productRepository = new ProductRepository();
-        var product = ProductFactory.Create("Product 1", 5.99m, GetTestCategory(), GetTestManufacturer());
-        productRepository.AddProductToList(product);
-
-        // act
-        var foundProduct = productRepository.GetProductByIdFromList("999");
-
-        // assert
-        Assert.Null(foundProduct);
-    }
-
-    [Fact]
-    public void ProductRepository_RemoveProductFromList_ShouldRemoveProduct()
+    public void ProductRepository_GetProductByIdFromList_ShouldReturnNullForNonExistentId()
     {
         // arrange
         var productRepository = new ProductRepository();
@@ -125,15 +154,35 @@ public class ProductRepository_Tests
         productRepository.AddProductToList(product);
 
         // act
-        var removedCount = productRepository.RemoveProductFromList(product.Id);
+        var result = productRepository.GetProductByIdFromList("non-existent-id");
+
+        // assert
+        Assert.Null(result);
+    }
+
+    [Fact]
+    public void ProductRepository_RemoveProductFromList_ShouldRemoveExistingProduct()
+    {
+        // arrange
+        var productRepository = new ProductRepository();
+        var product1 = ProductFactory.Create("Product 1", 5.99m, GetTestCategory(), GetTestManufacturer());
+        var product2 = ProductFactory.Create("Product 2", 15.99m, GetTestCategory(), GetTestManufacturer());
+
+        productRepository.AddProductToList(product1);
+        productRepository.AddProductToList(product2);
+
+        // act
+        var removedCount = productRepository.RemoveProductFromList(product1.Id);
+        var remainingProducts = productRepository.GetProductsFromList().ToList();
 
         // assert
         Assert.Equal(1, removedCount);
-        Assert.Empty(productRepository.GetProductsFromList());
+        Assert.Single(remainingProducts);
+        Assert.Equal(product2.Id, remainingProducts[0].Id);
     }
 
     [Fact]
-    public void ProductRepository_RemoveProductFromList_ShouldReturnZeroIfNotFound()
+    public void ProductRepository_RemoveProductFromList_ShouldReturnZeroForNonExistentProduct()
     {
         // arrange
         var productRepository = new ProductRepository();
@@ -141,10 +190,38 @@ public class ProductRepository_Tests
         productRepository.AddProductToList(product);
 
         // act
-        var removedCount = productRepository.RemoveProductFromList("nonexistent-id");
+        var removedCount = productRepository.RemoveProductFromList("non-existent-id");
+        var remainingProducts = productRepository.GetProductsFromList().ToList();
 
         // assert
         Assert.Equal(0, removedCount);
-        Assert.Single(productRepository.GetProductsFromList());
+        Assert.Single(remainingProducts);
+        Assert.Equal(product.Id, remainingProducts[0].Id);
+    }
+
+    [Fact]
+    public void ProductRepository_RemoveProductFromList_ShouldRemoveAllMatchingProducts()
+    {
+        // arrange
+        var productRepository = new ProductRepository();
+        var product1 = ProductFactory.Create("Product 1", 5.99m, GetTestCategory(), GetTestManufacturer());
+        var product2 = ProductFactory.Create("Product 2", 15.99m, GetTestCategory(), GetTestManufacturer());
+        var product3 = ProductFactory.Create("Product 3", 25.99m, GetTestCategory(), GetTestManufacturer());
+
+        // Manually create duplicate ID scenario (shouldn't happen in normal use but tests the RemoveAll behavior)
+        product3.Id = product1.Id;
+
+        productRepository.AddProductToList(product1);
+        productRepository.AddProductToList(product2);
+        productRepository.AddProductToList(product3);
+
+        // act
+        var removedCount = productRepository.RemoveProductFromList(product1.Id);
+        var remainingProducts = productRepository.GetProductsFromList().ToList();
+
+        // assert
+        Assert.Equal(2, removedCount);
+        Assert.Single(remainingProducts);
+        Assert.Equal(product2.Id, remainingProducts[0].Id);
     }
 }

@@ -3,6 +3,9 @@ using Xunit;
 
 namespace Infrastructure.Tests.Repositories;
 
+/// <summary>
+/// I've used Copilot to improve these tests and asked it adjust tests after refactorings
+/// </summary>
 public class FileRepository_Tests
 {
     [Fact]
