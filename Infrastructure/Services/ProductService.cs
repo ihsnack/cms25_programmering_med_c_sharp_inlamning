@@ -179,66 +179,67 @@ public class ProductService(IProductRepository productRepository, IFileService f
 
     public async Task<ResponseResult<bool>> CreateProduct(Product product)
     {
-        if (product == null)
-        {
-            return new ResponseResult<bool>
-            {
-                Success = false,
-                Message = "Product cannot be null.",
-                Result = false
-            };
-        }
-        if (string.IsNullOrWhiteSpace(product.Title))
-        {
-            return new ResponseResult<bool>
-            {
-                Success = false,
-                Message = "Product title cannot be empty or whitespace.",
-                Result = false
-            };
-        }
-        if (product.Price < 0)
-        {
-            return new ResponseResult<bool>
-            {
-                Success = false,
-                Message = "Product price cannot be negative.",
-                Result = false
-            };
-        }
-
-        if (string.IsNullOrWhiteSpace(product.Category.Name))
-        {
-            return new ResponseResult<bool>
-            {
-                Success = false,
-                Message = "Product category name needs to be provided",
-                Result = false
-            };
-        }
-
-        if (string.IsNullOrWhiteSpace(product.Manufacturer.Name))
-        {
-            return new ResponseResult<bool>
-            {
-                Success = false,
-                Message = "Product manufacturer name needs to be provided",
-                Result = false
-            };
-        }
-
-        var products = _productRepository.GetProductsFromList();
-        if (products.Any(p => p.Title.Equals(product.Title, StringComparison.OrdinalIgnoreCase)))
-        {
-            return new ResponseResult<bool>
-            {
-                Success = false,
-                Message = "A product with the same name already exists.",
-                Result = false
-            };
-        }
         try
         {
+            if (product == null)
+            {
+                return new ResponseResult<bool>
+                {
+                    Success = false,
+                    Message = "Product cannot be null.",
+                    Result = false
+                };
+            }
+            if (string.IsNullOrWhiteSpace(product.Title))
+            {
+                return new ResponseResult<bool>
+                {
+                    Success = false,
+                    Message = "Product title cannot be empty or whitespace.",
+                    Result = false
+                };
+            }
+            if (product.Price < 0)
+            {
+                return new ResponseResult<bool>
+                {
+                    Success = false,
+                    Message = "Product price cannot be negative.",
+                    Result = false
+                };
+            }
+
+            if (string.IsNullOrWhiteSpace(product.Category.Name))
+            {
+                return new ResponseResult<bool>
+                {
+                    Success = false,
+                    Message = "Product category name needs to be provided",
+                    Result = false
+                };
+            }
+
+            if (string.IsNullOrWhiteSpace(product.Manufacturer.Name))
+            {
+                return new ResponseResult<bool>
+                {
+                    Success = false,
+                    Message = "Product manufacturer name needs to be provided",
+                    Result = false
+                };
+            }
+
+            var products = _productRepository.GetProductsFromList();
+            if (products.Any(p => p.Title.Equals(product.Title, StringComparison.OrdinalIgnoreCase)))
+            {
+                return new ResponseResult<bool>
+                {
+                    Success = false,
+                    Message = "A product with the same name already exists.",
+                    Result = false
+                };
+            }
+
             var newProduct = ProductFactory.Create(product.Title, product.Price, product.Category, product.Manufacturer);
             _productRepository.AddProductToList(newProduct);
 
@@ -252,7 +253,6 @@ public class ProductService(IProductRepository productRepository, IFileService f
                     Message = $"{saveResponse.Message}",
                 };
             }
-
 
             return new ResponseResult<bool>
             {
@@ -273,58 +273,67 @@ public class ProductService(IProductRepository productRepository, IFileService f
     }
     public async Task<ResponseResult<bool>> UpdateProductAsync(Product product)
     {
-
-        if (product == null)
-        {
-            return new ResponseResult<bool>
-            {
-                Success = false,
-                Message = "Product cannot be null.",
-                Result = false
-            };
-        }
-        if (string.IsNullOrWhiteSpace(product.Title))
-        {
-            return new ResponseResult<bool>
-            {
-                Success = false,
-                Message = "Product title cannot be empty or whitespace.",
-                Result = false
-            };
-        }
-        if (product.Price < 0)
-        {
-            return new ResponseResult<bool>
-            {
-                Success = false,
-                Message = "Product price cannot be negative.",
-                Result = false
-            };
-        }
-
-        if (string.IsNullOrWhiteSpace(product.Category.Name))
-        {
-            return new ResponseResult<bool>
-            {
-                Success = false,
-                Message = "Product category name needs to be provided",
-                Result = false
-            };
-        }
-
-        if (string.IsNullOrWhiteSpace(product.Manufacturer.Name))
-        {
-            return new ResponseResult<bool>
-            {
-                Success = false,
-                Message = "Product manufacturer name needs to be provided",
-                Result = false
-            };
-        }
-
-
         try
         {
+            if (product == null)
+            {
+                return new ResponseResult<bool>
+                {
+                    Success = false,
+                    Message = "Product cannot be null.",
+                    Result = false
+                };
+            }
+            if (string.IsNullOrWhiteSpace(product.Title))
+            {
+                return new ResponseResult<bool>
+                {
+                    Success = false,
+                    Message = "Product title cannot be empty or whitespace.",
+                    Result = false
+                };
+            }
+            if (product.Price < 0)
+            {
+                return new ResponseResult<bool>
+                {
+                    Success = false,
+                    Message = "Product price cannot be negative.",
+                    Result = false
+                };
+            }
+
+            if (string.IsNullOrWhiteSpace(product.Category.Name))
+            {
+                return new ResponseResult<bool>
+                {
+                    Success = false,
+                    Message = "Product category name needs to be provided",
+                    Result = false
+                };
+            }
+
+            if (string.IsNullOrWhiteSpace(product.Manufacturer.Name))
+            {
+                return new ResponseResult<bool>
+                {
+                    Success = false,
+                    Message = "Product manufacturer name needs to be provided",
+                    Result = false
+                };
+            }
+
+            var products = _productRepository.GetProductsFromList();
+            if (products.Any(p => p.Id != product.Id && p.Title.Equals(product.Title, StringComparison.OrdinalIgnoreCase)))
+            {
+                return new ResponseResult<bool>
+                {
+                    Success = false,
+                    Message = "A product with the same name already exists.",
+                    Result = false
+                };
+            }
+
             var productToUpdate = _productRepository.GetProductByIdFromList(product.Id);
 
             if (productToUpdate == null)
@@ -353,8 +362,6 @@ public class ProductService(IProductRepository productRepository, IFileService f
                 };
             }
 
-
-
             return new ResponseResult<bool>
             {
                 Success = true,
@@ -362,16 +369,14 @@ public class ProductService(IProductRepository productRepository, IFileService f
                 Result = true
             };
         }
-        catch (Exception)
+        catch (Exception ex)
         {
             return new ResponseResult<bool>
             {
                 Success = false,
-                Message = "Could not update product.",
+                Message = ex.Message,
             };
         }
-
-
     }
 
     public async Task<ResponseResult<bool>> RemoveProduct(string id)
