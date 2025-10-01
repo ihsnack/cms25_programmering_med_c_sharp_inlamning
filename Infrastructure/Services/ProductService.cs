@@ -10,12 +10,19 @@ public class ProductService(IProductRepository productRepository, IFileService f
 {
     private readonly IFileService _fileService = fileService ?? throw new ArgumentNullException(nameof(fileService));
     private readonly IProductRepository _productRepository = productRepository ?? throw new ArgumentNullException(nameof(productRepository));
+    private CancellationTokenSource _cts = null!;
+
+    public void Cancel()
+    {
+        _cts.Cancel();
+    }
 
     public async Task<ResponseResult<IEnumerable<Product>>> LoadProductsAsync()
     {
         try
         {
-            var fileContent = await _fileService.LoadFromFileAsync();
+            _cts = new CancellationTokenSource();
+            var fileContent = await _fileService.LoadFromFileAsync(_cts.Token);
 
             if (!fileContent.Success)
             {
@@ -100,20 +107,27 @@ public class ProductService(IProductRepository productRepository, IFileService f
         }
         catch (Exception ex)
         {
+            Cancel();
+
             return new ResponseResult<IEnumerable<Product>>
             {
                 Success = false,
                 Message = $"{ex.Message}"
             };
         }
+        finally
+        {
+            _cts.Dispose();
+        }
     }
     public async Task<ResponseResult<bool>> SaveProductsAsync()
     {
         try
         {
+            _cts = new CancellationTokenSource();
             var productList = _productRepository.GetProductsFromList();
 
-            var result = await _fileService.SaveToFileAsync(productList);
+            var result = await _fileService.SaveToFileAsync(productList, _cts.Token);
 
 
             if (!result.Success)
@@ -134,6 +148,8 @@ public class ProductService(IProductRepository productRepository, IFileService f
         }
         catch (Exception ex)
         {
+            Cancel();
+
             return new ResponseResult<bool>
             {
                 Success = false,
@@ -141,12 +157,17 @@ public class ProductService(IProductRepository productRepository, IFileService f
                 Result = false
             };
         }
+        finally
+        {
+            _cts.Dispose();
+        }
     }
 
     public ResponseResult<IEnumerable<Product>> GetProducts()
     {
         try
         {
+            _cts = new CancellationTokenSource();
             var productList = _productRepository.GetProductsFromList();
 
             if (!productList.Any())
@@ -169,11 +190,17 @@ public class ProductService(IProductRepository productRepository, IFileService f
         }
         catch (Exception ex)
         {
+            Cancel();
+
             return new ResponseResult<IEnumerable<Product>>
             {
                 Success = false,
                 Message = $"{ex.Message}"
             };
+        }
+        finally
+        {
+            _cts.Dispose();
         }
     }
 
@@ -181,6 +208,8 @@ public class ProductService(IProductRepository productRepository, IFileService f
     {
         try
         {
+            _cts = new CancellationTokenSource();
+
             if (product == null)
             {
                 return new ResponseResult<bool>
@@ -263,6 +292,8 @@ public class ProductService(IProductRepository productRepository, IFileService f
         }
         catch (Exception ex)
         {
+            Cancel();
+
             return new ResponseResult<bool>
             {
                 Success = false,
@@ -270,11 +301,17 @@ public class ProductService(IProductRepository productRepository, IFileService f
                 Result = false
             };
         }
+        finally
+        {
+            _cts.Dispose();
+        }
     }
     public async Task<ResponseResult<bool>> UpdateProductAsync(Product product)
     {
         try
         {
+            _cts = new CancellationTokenSource();
+
             if (product == null)
             {
                 return new ResponseResult<bool>
@@ -371,11 +408,17 @@ public class ProductService(IProductRepository productRepository, IFileService f
         }
         catch (Exception ex)
         {
+            Cancel();
+
             return new ResponseResult<bool>
             {
                 Success = false,
                 Message = ex.Message,
             };
+        }
+        finally
+        {
+            _cts.Dispose();
         }
     }
 
@@ -384,6 +427,8 @@ public class ProductService(IProductRepository productRepository, IFileService f
 
         try
         {
+            _cts = new CancellationTokenSource();
+
             var result = _productRepository.RemoveProductFromList(id);
 
             if (result > 0)
@@ -417,12 +462,17 @@ public class ProductService(IProductRepository productRepository, IFileService f
         }
         catch (Exception)
         {
+            Cancel();
 
             return new ResponseResult<bool>
             {
                 Success = false,
                 Message = "Could not perform removal of product.",
             };
+        }
+        finally
+        {
+            _cts.Dispose();
         }
 
     }

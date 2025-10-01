@@ -28,10 +28,10 @@ public class FileService_Tests
         var expectedId = testProduct.Id;
         var products = new List<Product> { testProduct };
 
-        fileRepositoryMock.Setup(fr => fr.SaveContentToFileAsync(It.IsAny<string>())).Returns(Task.CompletedTask);
+        fileRepositoryMock.Setup(fr => fr.SaveContentToFileAsync(It.IsAny<string>(), It.IsAny<CancellationToken>())).Returns(Task.CompletedTask);
 
         // act
-        var response = await fileService.SaveToFileAsync(products);
+        var response = await fileService.SaveToFileAsync(products, CancellationToken.None);
 
         // assert
         Assert.Equal("Saved list to file successfully.", response.Message);
@@ -54,10 +54,10 @@ public class FileService_Tests
         var expectedId = testProduct.Id;
         var products = new List<Product> { testProduct };
 
-        fileRepositoryMock.Setup(fr => fr.SaveContentToFileAsync(It.IsAny<string>())).ThrowsAsync(new Exception("Unknown Error."));
+        fileRepositoryMock.Setup(fr => fr.SaveContentToFileAsync(It.IsAny<string>(), It.IsAny<CancellationToken>())).ThrowsAsync(new Exception("Unknown Error."));
 
         // act
-        var response = await fileService.SaveToFileAsync(products);
+        var response = await fileService.SaveToFileAsync(products, CancellationToken.None);
 
         // assert
         Assert.Equal("Error when trying to save file: Unknown Error.", response.Message);
@@ -78,10 +78,10 @@ public class FileService_Tests
 
         var products = new List<Product>();
 
-        fileRepositoryMock.Setup(fr => fr.SaveContentToFileAsync(It.IsAny<string>())).Returns(Task.CompletedTask);
+        fileRepositoryMock.Setup(fr => fr.SaveContentToFileAsync(It.IsAny<string>(), It.IsAny<CancellationToken>())).Returns(Task.CompletedTask);
 
         // act
-        var response = await fileService.SaveToFileAsync(products);
+        var response = await fileService.SaveToFileAsync(products, CancellationToken.None);
 
         // assert
         Assert.Equal("Saved list to file successfully.", response.Message);
@@ -105,12 +105,12 @@ public class FileService_Tests
         };
 
         string capturedJson = null!;
-        fileRepositoryMock.Setup(fr => fr.SaveContentToFileAsync(It.IsAny<string>()))
-            .Callback<string>(json => capturedJson = json)
+        fileRepositoryMock.Setup(fr => fr.SaveContentToFileAsync(It.IsAny<string>(), It.IsAny<CancellationToken>()))
+            .Callback<string, CancellationToken>((json, ct) => capturedJson = json)
             .Returns(Task.CompletedTask);
 
         // act
-        var response = await fileService.SaveToFileAsync(products);
+        var response = await fileService.SaveToFileAsync(products, CancellationToken.None);
 
         // assert
         Assert.True(response.Success);
@@ -124,17 +124,17 @@ public class FileService_Tests
     }
 
     [Fact]
-    public async Task FileService_LoadFromFileAsync_ShouldReturnEmptyResultForEmptyFile()
+    public async Task FileService_LoadFromFileAsync_ShouldReturnEmptyWhenNoFile()
     {
         // arrange
         var fileRepositoryMock = new Mock<IFileRepository>();
         var fileRepository = fileRepositoryMock.Object;
         var fileService = new FileService(fileRepository);
 
-        fileRepositoryMock.Setup(fr => fr.GetContentFromFileAsync()).ReturnsAsync(string.Empty);
+        fileRepositoryMock.Setup(fr => fr.GetContentFromFileAsync(It.IsAny<CancellationToken>())).ReturnsAsync(string.Empty);
 
         // act
-        var response = await fileService.LoadFromFileAsync();
+        var response = await fileService.LoadFromFileAsync(CancellationToken.None);
 
         // assert
         Assert.True(response.Success);
@@ -143,17 +143,17 @@ public class FileService_Tests
     }
 
     [Fact]
-    public async Task FileService_LoadFromFileAsync_ShouldReturnEmptyResultForNullContent()
+    public async Task FileService_LoadFromFileAsync_ShouldReturnEmptyWhenNullContent()
     {
         // arrange
         var fileRepositoryMock = new Mock<IFileRepository>();
         var fileRepository = fileRepositoryMock.Object;
         var fileService = new FileService(fileRepository);
 
-        fileRepositoryMock.Setup(fr => fr.GetContentFromFileAsync()).ReturnsAsync((string)null!);
+        fileRepositoryMock.Setup(fr => fr.GetContentFromFileAsync(It.IsAny<CancellationToken>())).ReturnsAsync((string)null!);
 
         // act
-        var response = await fileService.LoadFromFileAsync();
+        var response = await fileService.LoadFromFileAsync(CancellationToken.None);
 
         // assert
         Assert.True(response.Success);
@@ -162,7 +162,32 @@ public class FileService_Tests
     }
 
     [Fact]
-    public async Task FileService_LoadFromFileAsync_ShouldDeserializeValidJson()
+    public async Task FileService_LoadFromFileAsync_ShouldReturnProductsWhenFileExists()
+    {
+        // arrange
+        var fileRepositoryMock = new Mock<IFileRepository>();
+        var fileRepository = fileRepositoryMock.Object;
+        var fileService = new FileService(fileRepository);
+
+        var testProduct = ProductFactory.Create("test product", 9.99m, GetTestCategory(), GetTestManufacturer());
+        var products = new List<Product> { testProduct };
+        var jsonContent = JsonSerializer.Serialize(products, new JsonSerializerOptions { WriteIndented = true });
+
+        fileRepositoryMock.Setup(fr => fr.GetContentFromFileAsync(It.IsAny<CancellationToken>())).ReturnsAsync(jsonContent);
+
+        // act
+        var response = await fileService.LoadFromFileAsync(CancellationToken.None);
+
+        // assert
+        Assert.True(response.Success);
+        Assert.Equal("Loaded list successfully from file.", response.Message);
+        Assert.NotNull(response.Result);
+        Assert.Single(response.Result);
+        Assert.Equal("test product", response.Result.First().Title);
+    }
+
+    [Fact]
+    public async Task FileService_LoadFromFileAsync_ShouldDeserializeMultipleProducts()
     {
         // arrange
         var fileRepositoryMock = new Mock<IFileRepository>();
@@ -174,12 +199,12 @@ public class FileService_Tests
             ProductFactory.Create("Test Product 1", 9.99m, GetTestCategory(), GetTestManufacturer()),
             ProductFactory.Create("Test Product 2", 19.99m, GetTestCategory(), GetTestManufacturer())
         };
+        var jsonContent = JsonSerializer.Serialize(products, new JsonSerializerOptions { WriteIndented = true });
 
-        var json = JsonSerializer.Serialize(products, new JsonSerializerOptions { WriteIndented = true });
-        fileRepositoryMock.Setup(fr => fr.GetContentFromFileAsync()).ReturnsAsync(json);
+        fileRepositoryMock.Setup(fr => fr.GetContentFromFileAsync(It.IsAny<CancellationToken>())).ReturnsAsync(jsonContent);
 
         // act
-        var response = await fileService.LoadFromFileAsync();
+        var response = await fileService.LoadFromFileAsync(CancellationToken.None);
 
         // assert
         Assert.True(response.Success);
@@ -203,10 +228,10 @@ public class FileService_Tests
         var fileService = new FileService(fileRepository);
 
         var json = "[]";
-        fileRepositoryMock.Setup(fr => fr.GetContentFromFileAsync()).ReturnsAsync(json);
+        fileRepositoryMock.Setup(fr => fr.GetContentFromFileAsync(It.IsAny<CancellationToken>())).ReturnsAsync(json);
 
         // act
-        var response = await fileService.LoadFromFileAsync();
+        var response = await fileService.LoadFromFileAsync(CancellationToken.None);
 
         // assert
         Assert.True(response.Success);
@@ -216,22 +241,22 @@ public class FileService_Tests
     }
 
     [Fact]
-    public async Task FileService_LoadFromFileAsync_ShouldHandleInvalidJson()
+    public async Task FileService_LoadFromFileAsync_ShouldCatchExceptionWhenDeserializationFails()
     {
         // arrange
         var fileRepositoryMock = new Mock<IFileRepository>();
         var fileRepository = fileRepositoryMock.Object;
         var fileService = new FileService(fileRepository);
 
-        var invalidJson = "{ invalid json content }";
-        fileRepositoryMock.Setup(fr => fr.GetContentFromFileAsync()).ReturnsAsync(invalidJson);
+        fileRepositoryMock.Setup(fr => fr.GetContentFromFileAsync(It.IsAny<CancellationToken>())).ReturnsAsync("invalid json content");
 
         // act
-        var response = await fileService.LoadFromFileAsync();
+        var response = await fileService.LoadFromFileAsync(CancellationToken.None);
 
         // assert
         Assert.False(response.Success);
-        Assert.StartsWith("Error when trying to read file:", response.Message);
+        Assert.Contains("Error when trying to read file:", response.Message);
+        Assert.Null(response.Result);
     }
 
     [Fact]
@@ -242,14 +267,15 @@ public class FileService_Tests
         var fileRepository = fileRepositoryMock.Object;
         var fileService = new FileService(fileRepository);
 
-        fileRepositoryMock.Setup(fr => fr.GetContentFromFileAsync()).ThrowsAsync(new Exception("File access error"));
+        fileRepositoryMock.Setup(fr => fr.GetContentFromFileAsync(It.IsAny<CancellationToken>())).ThrowsAsync(new Exception("File access error"));
 
         // act
-        var response = await fileService.LoadFromFileAsync();
+        var response = await fileService.LoadFromFileAsync(CancellationToken.None);
 
         // assert
         Assert.False(response.Success);
         Assert.Equal("Error when trying to read file: File access error", response.Message);
+        Assert.Null(response.Result);
     }
 
     [Fact]
@@ -261,10 +287,10 @@ public class FileService_Tests
         var fileService = new FileService(fileRepository);
 
         var json = "null";
-        fileRepositoryMock.Setup(fr => fr.GetContentFromFileAsync()).ReturnsAsync(json);
+        fileRepositoryMock.Setup(fr => fr.GetContentFromFileAsync(It.IsAny<CancellationToken>())).ReturnsAsync(json);
 
         // act
-        var response = await fileService.LoadFromFileAsync();
+        var response = await fileService.LoadFromFileAsync(CancellationToken.None);
 
         // assert
         Assert.True(response.Success);

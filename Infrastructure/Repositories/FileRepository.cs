@@ -13,17 +13,17 @@ namespace Infrastructure.Repositories
             _filePath = Path.Combine(_directoryPath, "products.json");
         }
 
-        public async Task<string> GetContentFromFileAsync()
+        public async Task<string> GetContentFromFileAsync(CancellationToken cancellationToken)
         {
             if (File.Exists(_filePath))
             {
-                return await File.ReadAllTextAsync(_filePath);
+                return await File.ReadAllTextAsync(_filePath, cancellationToken);
             }
 
             return string.Empty;
         }
 
-        public async Task SaveContentToFileAsync(string content)
+        public async Task SaveContentToFileAsync(string content, CancellationToken cancellationToken)
         {
             if (!Directory.Exists(_directoryPath))
             {
@@ -31,7 +31,8 @@ namespace Infrastructure.Repositories
             }
 
             using var sw = new StreamWriter(_filePath);
-            await sw.WriteAsync(content);
+            await sw.WriteAsync(content.AsMemory(), cancellationToken);
+            await sw.FlushAsync(cancellationToken);
         }
     }
 }

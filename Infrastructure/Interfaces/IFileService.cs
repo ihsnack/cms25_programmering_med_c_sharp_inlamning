@@ -4,7 +4,7 @@ namespace Infrastructure.Interfaces
 {
     public interface IFileService
     {
-        Task<ResponseResult<IEnumerable<Product>>> LoadFromFileAsync();
-        Task<ResponseResult<bool>> SaveToFileAsync(IEnumerable<Product> content);
+        Task<ResponseResult<IEnumerable<Product>>> LoadFromFileAsync(CancellationToken cancellationToken);
+        Task<ResponseResult<bool>> SaveToFileAsync(IEnumerable<Product> content, CancellationToken cancellationToken);
     }
 }

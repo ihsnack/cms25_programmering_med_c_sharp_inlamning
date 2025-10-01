@@ -10,5 +10,6 @@ public interface IProductService
     Task<ResponseResult<bool>> RemoveProduct(string id);
     Task<ResponseResult<bool>> UpdateProductAsync(Product product);
     Task<ResponseResult<bool>> CreateProduct(Product product);
+    void Cancel();
 }
 

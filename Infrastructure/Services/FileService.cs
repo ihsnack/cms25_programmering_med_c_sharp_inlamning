@@ -13,12 +13,12 @@ public class FileService : IFileService
         _fileRepository = fileRepository;
     }
 
-    public async Task<ResponseResult<bool>> SaveToFileAsync(IEnumerable<Product> productList)
+    public async Task<ResponseResult<bool>> SaveToFileAsync(IEnumerable<Product> productList, CancellationToken cancellationToken)
     {
         try
         {
             var json = JsonSerializer.Serialize(productList, new JsonSerializerOptions { WriteIndented = true });
-            await _fileRepository.SaveContentToFileAsync(json);
+            await _fileRepository.SaveContentToFileAsync(json, cancellationToken);
 
             return new ResponseResult<bool>
             {
@@ -38,11 +38,11 @@ public class FileService : IFileService
         }
     }
 
-    public async Task<ResponseResult<IEnumerable<Product>>> LoadFromFileAsync()
+    public async Task<ResponseResult<IEnumerable<Product>>> LoadFromFileAsync(CancellationToken cancellationToken)
     {
         try
         {
-            var content = await _fileRepository.GetContentFromFileAsync();
+            var content = await _fileRepository.GetContentFromFileAsync(cancellationToken);
 
             if (string.IsNullOrEmpty(content))
             {
