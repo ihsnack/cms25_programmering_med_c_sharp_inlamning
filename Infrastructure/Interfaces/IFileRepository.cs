@@ -2,6 +2,6 @@
 
 public interface IFileRepository
 {
-    Task<string> GetContentFromFileAsync();
-    Task SaveContentToFileAsync(string content);
+    Task<string> GetContentFromFileAsync(CancellationToken cancellationToken);
+    Task SaveContentToFileAsync(string content, CancellationToken cancellationToken);
 }

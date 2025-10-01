@@ -24,7 +24,7 @@ public class ProductService_Tests
         var productRepositoryMock = new Mock<IProductRepository>();
         var productService = new ProductService(productRepositoryMock.Object, fileServiceMock.Object);
 
-        fileServiceMock.Setup(fs => fs.LoadFromFileAsync()).ReturnsAsync(new ResponseResult<IEnumerable<Product>>
+        fileServiceMock.Setup(fs => fs.LoadFromFileAsync(It.IsAny<CancellationToken>())).ReturnsAsync(new ResponseResult<IEnumerable<Product>>
         {
             Success = true,
             Result = null
@@ -49,7 +49,7 @@ public class ProductService_Tests
         var fileProduct = ProductFactory.Create("File Product", 15.99m, GetTestCategory(), GetTestManufacturer());
         var fileProducts = new List<Product> { fileProduct };
 
-        fileServiceMock.Setup(fs => fs.LoadFromFileAsync()).ReturnsAsync(new ResponseResult<IEnumerable<Product>>
+        fileServiceMock.Setup(fs => fs.LoadFromFileAsync(It.IsAny<CancellationToken>())).ReturnsAsync(new ResponseResult<IEnumerable<Product>>
         {
             Success = true,
             Result = fileProducts
@@ -78,7 +78,7 @@ public class ProductService_Tests
 
         var fileProducts = new List<Product> { null! };
 
-        fileServiceMock.Setup(fs => fs.LoadFromFileAsync()).ReturnsAsync(new ResponseResult<IEnumerable<Product>>
+        fileServiceMock.Setup(fs => fs.LoadFromFileAsync(It.IsAny<CancellationToken>())).ReturnsAsync(new ResponseResult<IEnumerable<Product>>
         {
             Success = true,
             Result = fileProducts
@@ -100,7 +100,7 @@ public class ProductService_Tests
         var productRepositoryMock = new Mock<IProductRepository>();
         var productService = new ProductService(productRepositoryMock.Object, fileServiceMock.Object);
 
-        fileServiceMock.Setup(fs => fs.LoadFromFileAsync()).ReturnsAsync(new ResponseResult<IEnumerable<Product>>
+        fileServiceMock.Setup(fs => fs.LoadFromFileAsync(It.IsAny<CancellationToken>())).ReturnsAsync(new ResponseResult<IEnumerable<Product>>
         {
             Success = false,
             Message = "File read error"
@@ -131,7 +131,7 @@ public class ProductService_Tests
             Manufacturer = GetTestManufacturer()
         };
 
-        fileServiceMock.Setup(fs => fs.LoadFromFileAsync()).ReturnsAsync(new ResponseResult<IEnumerable<Product>>
+        fileServiceMock.Setup(fs => fs.LoadFromFileAsync(It.IsAny<CancellationToken>())).ReturnsAsync(new ResponseResult<IEnumerable<Product>>
         {
             Success = true,
             Result = new List<Product> { invalidProduct }
@@ -162,7 +162,7 @@ public class ProductService_Tests
             Manufacturer = GetTestManufacturer()
         };
 
-        fileServiceMock.Setup(fs => fs.LoadFromFileAsync()).ReturnsAsync(new ResponseResult<IEnumerable<Product>>
+        fileServiceMock.Setup(fs => fs.LoadFromFileAsync(It.IsAny<CancellationToken>())).ReturnsAsync(new ResponseResult<IEnumerable<Product>>
         {
             Success = true,
             Result = new List<Product> { invalidProduct }
@@ -193,7 +193,7 @@ public class ProductService_Tests
             Manufacturer = GetTestManufacturer()
         };
 
-        fileServiceMock.Setup(fs => fs.LoadFromFileAsync()).ReturnsAsync(new ResponseResult<IEnumerable<Product>>
+        fileServiceMock.Setup(fs => fs.LoadFromFileAsync(It.IsAny<CancellationToken>())).ReturnsAsync(new ResponseResult<IEnumerable<Product>>
         {
             Success = true,
             Result = new List<Product> { invalidProduct }
@@ -224,7 +224,7 @@ public class ProductService_Tests
             Manufacturer = new Manufacturer { Name = "" }
         };
 
-        fileServiceMock.Setup(fs => fs.LoadFromFileAsync()).ReturnsAsync(new ResponseResult<IEnumerable<Product>>
+        fileServiceMock.Setup(fs => fs.LoadFromFileAsync(It.IsAny<CancellationToken>())).ReturnsAsync(new ResponseResult<IEnumerable<Product>>
         {
             Success = true,
             Result = new List<Product> { invalidProduct }
@@ -246,7 +246,7 @@ public class ProductService_Tests
         var productRepositoryMock = new Mock<IProductRepository>();
         var productService = new ProductService(productRepositoryMock.Object, fileServiceMock.Object);
 
-        fileServiceMock.Setup(fs => fs.LoadFromFileAsync()).ThrowsAsync(new Exception("Test exception"));
+        fileServiceMock.Setup(fs => fs.LoadFromFileAsync(It.IsAny<CancellationToken>())).ThrowsAsync(new Exception("Test exception"));
 
         // act
         var response = await productService.LoadProductsAsync();
@@ -267,7 +267,7 @@ public class ProductService_Tests
         var products = new List<Product> { ProductFactory.Create("Test Product", 9.99m, GetTestCategory(), GetTestManufacturer()) };
 
         productRepositoryMock.Setup(pr => pr.GetProductsFromList()).Returns(products);
-        fileServiceMock.Setup(fs => fs.SaveToFileAsync(It.IsAny<IEnumerable<Product>>())).ReturnsAsync(new ResponseResult<bool>
+        fileServiceMock.Setup(fs => fs.SaveToFileAsync(It.IsAny<IEnumerable<Product>>(), It.IsAny<CancellationToken>())).ReturnsAsync(new ResponseResult<bool>
         {
             Success = true,
             Message = "Saved successfully"
@@ -293,7 +293,7 @@ public class ProductService_Tests
         var products = new List<Product> { ProductFactory.Create("Test Product", 9.99m, GetTestCategory(), GetTestManufacturer()) };
 
         productRepositoryMock.Setup(pr => pr.GetProductsFromList()).Returns(products);
-        fileServiceMock.Setup(fs => fs.SaveToFileAsync(It.IsAny<IEnumerable<Product>>())).ReturnsAsync(new ResponseResult<bool>
+        fileServiceMock.Setup(fs => fs.SaveToFileAsync(It.IsAny<IEnumerable<Product>>(), It.IsAny<CancellationToken>())).ReturnsAsync(new ResponseResult<bool>
         {
             Success = false,
             Message = "File save error"
@@ -547,7 +547,7 @@ public class ProductService_Tests
         };
 
         productRepositoryMock.Setup(pr => pr.GetProductsFromList()).Returns(new List<Product>());
-        fileServiceMock.Setup(fs => fs.SaveToFileAsync(It.IsAny<IEnumerable<Product>>())).ReturnsAsync(new ResponseResult<bool>
+        fileServiceMock.Setup(fs => fs.SaveToFileAsync(It.IsAny<IEnumerable<Product>>(), It.IsAny<CancellationToken>())).ReturnsAsync(new ResponseResult<bool>
         {
             Success = true,
             Message = "Saved successfully"
@@ -580,7 +580,7 @@ public class ProductService_Tests
         };
 
         productRepositoryMock.Setup(pr => pr.GetProductsFromList()).Returns(new List<Product>());
-        fileServiceMock.Setup(fs => fs.SaveToFileAsync(It.IsAny<IEnumerable<Product>>())).ReturnsAsync(new ResponseResult<bool>
+        fileServiceMock.Setup(fs => fs.SaveToFileAsync(It.IsAny<IEnumerable<Product>>(), It.IsAny<CancellationToken>())).ReturnsAsync(new ResponseResult<bool>
         {
             Success = false,
             Message = "Save failed"
@@ -744,7 +744,7 @@ public class ProductService_Tests
 
         productRepositoryMock.Setup(pr => pr.GetProductsFromList()).Returns(new List<Product> { existingProduct });
         productRepositoryMock.Setup(pr => pr.GetProductByIdFromList(existingProduct.Id)).Returns(existingProduct);
-        fileServiceMock.Setup(fs => fs.SaveToFileAsync(It.IsAny<IEnumerable<Product>>())).ReturnsAsync(new ResponseResult<bool>
+        fileServiceMock.Setup(fs => fs.SaveToFileAsync(It.IsAny<IEnumerable<Product>>(), It.IsAny<CancellationToken>())).ReturnsAsync(new ResponseResult<bool>
         {
             Success = true,
             Message = "Saved successfully"
@@ -813,7 +813,7 @@ public class ProductService_Tests
 
         productRepositoryMock.Setup(pr => pr.GetProductsFromList()).Returns(new List<Product> { existingProduct });
         productRepositoryMock.Setup(pr => pr.GetProductByIdFromList(existingProduct.Id)).Returns(existingProduct);
-        fileServiceMock.Setup(fs => fs.SaveToFileAsync(It.IsAny<IEnumerable<Product>>())).ReturnsAsync(new ResponseResult<bool>
+        fileServiceMock.Setup(fs => fs.SaveToFileAsync(It.IsAny<IEnumerable<Product>>(), It.IsAny<CancellationToken>())).ReturnsAsync(new ResponseResult<bool>
         {
             Success = true,
             Message = "Saved successfully"
@@ -854,7 +854,7 @@ public class ProductService_Tests
 
         productRepositoryMock.Setup(pr => pr.GetProductsFromList()).Returns(new List<Product> { existingProduct });
         productRepositoryMock.Setup(pr => pr.GetProductByIdFromList(existingProduct.Id)).Returns(existingProduct);
-        fileServiceMock.Setup(fs => fs.SaveToFileAsync(It.IsAny<IEnumerable<Product>>())).ReturnsAsync(new ResponseResult<bool>
+        fileServiceMock.Setup(fs => fs.SaveToFileAsync(It.IsAny<IEnumerable<Product>>(), It.IsAny<CancellationToken>())).ReturnsAsync(new ResponseResult<bool>
         {
             Success = false,
             Message = "Save failed"
@@ -906,7 +906,7 @@ public class ProductService_Tests
         var productId = "test-id";
 
         productRepositoryMock.Setup(pr => pr.RemoveProductFromList(productId)).Returns(1);
-        fileServiceMock.Setup(fs => fs.SaveToFileAsync(It.IsAny<IEnumerable<Product>>())).ReturnsAsync(new ResponseResult<bool>
+        fileServiceMock.Setup(fs => fs.SaveToFileAsync(It.IsAny<IEnumerable<Product>>(), It.IsAny<CancellationToken>())).ReturnsAsync(new ResponseResult<bool>
         {
             Success = true,
             Message = "Saved successfully"
@@ -951,7 +951,7 @@ public class ProductService_Tests
         var productId = "test-id";
 
         productRepositoryMock.Setup(pr => pr.RemoveProductFromList(productId)).Returns(1);
-        fileServiceMock.Setup(fs => fs.SaveToFileAsync(It.IsAny<IEnumerable<Product>>())).ReturnsAsync(new ResponseResult<bool>
+        fileServiceMock.Setup(fs => fs.SaveToFileAsync(It.IsAny<IEnumerable<Product>>(), It.IsAny<CancellationToken>())).ReturnsAsync(new ResponseResult<bool>
         {
             Success = false,
             Message = "Save failed"
