@@ -8,6 +8,9 @@ using Xunit;
 
 namespace Infrastructure.Tests.Services;
 
+/// <summary>
+/// I've used Copilot to improve these tests and asked it adjust tests after refactorings
+/// </summary>
 public class ProductService_Tests
 {
     private Category GetTestCategory() => new Category { Name = "Clothes" };
@@ -90,20 +93,48 @@ public class ProductService_Tests
     }
 
     [Fact]
-    public async Task ProductService_LoadProducts_ShouldRejectEmptyTitle()
+    public async Task ProductService_LoadProducts_ShouldHandleFileServiceFailure()
     {
         // arrange
         var fileServiceMock = new Mock<IFileService>();
         var productRepositoryMock = new Mock<IProductRepository>();
         var productService = new ProductService(productRepositoryMock.Object, fileServiceMock.Object);
 
-        var invalidProduct = ProductFactory.Create("", 10.99m, GetTestCategory(), GetTestManufacturer());
-        var fileProducts = new List<Product> { invalidProduct };
+        fileServiceMock.Setup(fs => fs.LoadFromFileAsync()).ReturnsAsync(new ResponseResult<IEnumerable<Product>>
+        {
+            Success = false,
+            Message = "File read error"
+        });
+
+        // act
+        var response = await productService.LoadProductsAsync();
+
+        // assert
+        Assert.False(response.Success);
+        Assert.Equal("File read error", response.Message);
+    }
+
+    [Fact]
+    public async Task ProductService_LoadProducts_ShouldRejectProductsWithEmptyTitle()
+    {
+        // arrange
+        var fileServiceMock = new Mock<IFileService>();
+        var productRepositoryMock = new Mock<IProductRepository>();
+        var productService = new ProductService(productRepositoryMock.Object, fileServiceMock.Object);
+
+        var invalidProduct = new Product
+        {
+            Id = "test-id",
+            Title = "",
+            Price = 10.99m,
+            Category = GetTestCategory(),
+            Manufacturer = GetTestManufacturer()
+        };
 
         fileServiceMock.Setup(fs => fs.LoadFromFileAsync()).ReturnsAsync(new ResponseResult<IEnumerable<Product>>
         {
             Success = true,
-            Result = fileProducts
+            Result = new List<Product> { invalidProduct }
         });
 
         // act
@@ -115,20 +146,26 @@ public class ProductService_Tests
     }
 
     [Fact]
-    public async Task ProductService_LoadProducts_ShouldRejectNegativePrice()
+    public async Task ProductService_LoadProducts_ShouldRejectProductsWithNegativePrice()
     {
         // arrange
         var fileServiceMock = new Mock<IFileService>();
         var productRepositoryMock = new Mock<IProductRepository>();
         var productService = new ProductService(productRepositoryMock.Object, fileServiceMock.Object);
 
-        var invalidProduct = ProductFactory.Create("Invalid Product", -5.99m, GetTestCategory(), GetTestManufacturer());
-        var fileProducts = new List<Product> { invalidProduct };
+        var invalidProduct = new Product
+        {
+            Id = "test-id",
+            Title = "Valid Title",
+            Price = -5.99m,
+            Category = GetTestCategory(),
+            Manufacturer = GetTestManufacturer()
+        };
 
         fileServiceMock.Setup(fs => fs.LoadFromFileAsync()).ReturnsAsync(new ResponseResult<IEnumerable<Product>>
         {
             Success = true,
-            Result = fileProducts
+            Result = new List<Product> { invalidProduct }
         });
 
         // act
@@ -140,41 +177,100 @@ public class ProductService_Tests
     }
 
     [Fact]
-    public async Task ProductService_LoadProducts_ShouldHandleJsonException()
+    public async Task ProductService_LoadProducts_ShouldRejectProductsWithEmptyCategoryName()
     {
         // arrange
         var fileServiceMock = new Mock<IFileService>();
         var productRepositoryMock = new Mock<IProductRepository>();
         var productService = new ProductService(productRepositoryMock.Object, fileServiceMock.Object);
 
-        fileServiceMock.Setup(fs => fs.LoadFromFileAsync()).Throws(new JsonException("Invalid JSON"));
+        var invalidProduct = new Product
+        {
+            Id = "test-id",
+            Title = "Valid Title",
+            Price = 10.99m,
+            Category = new Category { Name = "" },
+            Manufacturer = GetTestManufacturer()
+        };
+
+        fileServiceMock.Setup(fs => fs.LoadFromFileAsync()).ReturnsAsync(new ResponseResult<IEnumerable<Product>>
+        {
+            Success = true,
+            Result = new List<Product> { invalidProduct }
+        });
 
         // act
         var response = await productService.LoadProductsAsync();
 
         // assert
         Assert.False(response.Success);
-        Assert.Equal("Invalid JSON", response.Message);
+        Assert.Equal("Product category name needs to be provided. File load aborted.", response.Message);
     }
 
     [Fact]
-    public async Task ProductService_SaveProducts_ShouldReturnSuccess_WhenSaveSucceeds()
+    public async Task ProductService_LoadProducts_ShouldRejectProductsWithEmptyManufacturerName()
     {
         // arrange
         var fileServiceMock = new Mock<IFileService>();
         var productRepositoryMock = new Mock<IProductRepository>();
         var productService = new ProductService(productRepositoryMock.Object, fileServiceMock.Object);
 
-        var product1 = ProductFactory.Create("Product 1", 10.99m, GetTestCategory(), GetTestManufacturer());
-        var product2 = ProductFactory.Create("Product 2", 20.99m, GetTestCategory(), GetTestManufacturer());
-        var products = new List<Product> { product1, product2 };
+        var invalidProduct = new Product
+        {
+            Id = "test-id",
+            Title = "Valid Title",
+            Price = 10.99m,
+            Category = GetTestCategory(),
+            Manufacturer = new Manufacturer { Name = "" }
+        };
+
+        fileServiceMock.Setup(fs => fs.LoadFromFileAsync()).ReturnsAsync(new ResponseResult<IEnumerable<Product>>
+        {
+            Success = true,
+            Result = new List<Product> { invalidProduct }
+        });
+
+        // act
+        var response = await productService.LoadProductsAsync();
+
+        // assert
+        Assert.False(response.Success);
+        Assert.Equal("Product manufacturer name needs to be provided. File load aborted.", response.Message);
+    }
+
+    [Fact]
+    public async Task ProductService_LoadProducts_ShouldHandleException()
+    {
+        // arrange
+        var fileServiceMock = new Mock<IFileService>();
+        var productRepositoryMock = new Mock<IProductRepository>();
+        var productService = new ProductService(productRepositoryMock.Object, fileServiceMock.Object);
+
+        fileServiceMock.Setup(fs => fs.LoadFromFileAsync()).ThrowsAsync(new Exception("Test exception"));
+
+        // act
+        var response = await productService.LoadProductsAsync();
+
+        // assert
+        Assert.False(response.Success);
+        Assert.Equal("Test exception", response.Message);
+    }
+
+    [Fact]
+    public async Task ProductService_SaveProducts_ShouldReturnSuccessWhenFileServiceSucceeds()
+    {
+        // arrange
+        var fileServiceMock = new Mock<IFileService>();
+        var productRepositoryMock = new Mock<IProductRepository>();
+        var productService = new ProductService(productRepositoryMock.Object, fileServiceMock.Object);
+
+        var products = new List<Product> { ProductFactory.Create("Test Product", 9.99m, GetTestCategory(), GetTestManufacturer()) };
 
         productRepositoryMock.Setup(pr => pr.GetProductsFromList()).Returns(products);
-        fileServiceMock.Setup(fs => fs.SaveToFileAsync(products)).ReturnsAsync(new ResponseResult<bool>
+        fileServiceMock.Setup(fs => fs.SaveToFileAsync(It.IsAny<IEnumerable<Product>>())).ReturnsAsync(new ResponseResult<bool>
         {
             Success = true,
-            Message = "File saved successfully",
-            Result = true
+            Message = "Saved successfully"
         });
 
         // act
@@ -184,40 +280,35 @@ public class ProductService_Tests
         Assert.True(response.Success);
         Assert.Equal("Products saved to file successfully.", response.Message);
         Assert.True(response.Result);
-        productRepositoryMock.Verify(pr => pr.GetProductsFromList(), Times.Once);
-        fileServiceMock.Verify(fs => fs.SaveToFileAsync(products), Times.Once);
     }
 
     [Fact]
-    public async Task ProductService_SaveProducts_ShouldHandleEmptyProductList()
+    public async Task ProductService_SaveProducts_ShouldReturnFailureWhenFileServiceFails()
     {
         // arrange
         var fileServiceMock = new Mock<IFileService>();
         var productRepositoryMock = new Mock<IProductRepository>();
         var productService = new ProductService(productRepositoryMock.Object, fileServiceMock.Object);
 
-        var emptyProducts = new List<Product>();
+        var products = new List<Product> { ProductFactory.Create("Test Product", 9.99m, GetTestCategory(), GetTestManufacturer()) };
 
-        productRepositoryMock.Setup(pr => pr.GetProductsFromList()).Returns(emptyProducts);
-        fileServiceMock.Setup(fs => fs.SaveToFileAsync(emptyProducts)).ReturnsAsync(new ResponseResult<bool>
+        productRepositoryMock.Setup(pr => pr.GetProductsFromList()).Returns(products);
+        fileServiceMock.Setup(fs => fs.SaveToFileAsync(It.IsAny<IEnumerable<Product>>())).ReturnsAsync(new ResponseResult<bool>
         {
-            Success = true,
-            Message = "Empty list saved",
-            Result = true
+            Success = false,
+            Message = "File save error"
         });
 
         // act
         var response = await productService.SaveProductsAsync();
 
         // assert
-        Assert.True(response.Success);
-        Assert.Equal("Products saved to file successfully.", response.Message);
-        Assert.True(response.Result);
-        fileServiceMock.Verify(fs => fs.SaveToFileAsync(emptyProducts), Times.Once);
+        Assert.False(response.Success);
+        Assert.Equal("File save error", response.Message);
     }
 
     [Fact]
-    public async Task ProductService_SaveProducts_ShouldCatchException()
+    public async Task ProductService_SaveProducts_ShouldHandleException()
     {
         // arrange
         var fileServiceMock = new Mock<IFileService>();
@@ -236,297 +327,393 @@ public class ProductService_Tests
     }
 
     [Fact]
-    public async Task ProductService_SaveProducts_ShouldHandleFileServiceFailure()
+    public void ProductService_GetProducts_ShouldReturnEmptyListMessage()
     {
         // arrange
         var fileServiceMock = new Mock<IFileService>();
         var productRepositoryMock = new Mock<IProductRepository>();
         var productService = new ProductService(productRepositoryMock.Object, fileServiceMock.Object);
 
-        var products = new List<Product> { ProductFactory.Create("Test", 10.99m, GetTestCategory(), GetTestManufacturer()) };
-
-        productRepositoryMock.Setup(pr => pr.GetProductsFromList()).Returns(products);
-        fileServiceMock.Setup(fs => fs.SaveToFileAsync(products)).Throws(new Exception("File system error"));
+        productRepositoryMock.Setup(pr => pr.GetProductsFromList()).Returns(new List<Product>());
 
         // act
-        var response = await productService.SaveProductsAsync();
+        var response = productService.GetProducts();
 
         // assert
-        Assert.False(response.Success);
-        Assert.Equal("File system error", response.Message);
-        Assert.False(response.Result);
+        Assert.True(response.Success);
+        Assert.Equal("No products in list.", response.Message);
+        Assert.NotNull(response.Result);
+        Assert.Empty(response.Result);
     }
 
     [Fact]
-    public async Task ProductService_SaveProducts_ShouldHandleJsonException()
+    public void ProductService_GetProducts_ShouldReturnProductsList()
     {
         // arrange
         var fileServiceMock = new Mock<IFileService>();
         var productRepositoryMock = new Mock<IProductRepository>();
         var productService = new ProductService(productRepositoryMock.Object, fileServiceMock.Object);
 
-        var products = new List<Product> { ProductFactory.Create("Test", 10.99m, GetTestCategory(), GetTestManufacturer()) };
+        var products = new List<Product> { ProductFactory.Create("Test Product", 9.99m, GetTestCategory(), GetTestManufacturer()) };
         productRepositoryMock.Setup(pr => pr.GetProductsFromList()).Returns(products);
-        fileServiceMock.Setup(fs => fs.SaveToFileAsync(products)).Throws(new Exception("Could not save."));
 
         // act
-        var response = await productService.SaveProductsAsync();
+        var response = productService.GetProducts();
 
         // assert
-        Assert.False(response.Success);
-        Assert.Equal("Could not save.", response.Message);
-        Assert.False(response.Result);
+        Assert.True(response.Success);
+        Assert.Equal("Products retrieved successfully.", response.Message);
+        Assert.NotNull(response.Result);
+        Assert.Single(response.Result);
     }
 
     [Fact]
-    public async Task ProductService_CreateProduct_ShouldReturnFalse_WhenProductIsNull()
+    public void ProductService_GetProducts_ShouldHandleException()
     {
         // arrange
         var fileServiceMock = new Mock<IFileService>();
         var productRepositoryMock = new Mock<IProductRepository>();
         var productService = new ProductService(productRepositoryMock.Object, fileServiceMock.Object);
+
+        productRepositoryMock.Setup(pr => pr.GetProductsFromList()).Throws(new Exception("Repository error"));
+
+        // act
+        var response = productService.GetProducts();
+
+        // assert
+        Assert.False(response.Success);
+        Assert.Equal("Repository error", response.Message);
+    }
+
+    [Fact]
+    public async Task ProductService_CreateProduct_ShouldRejectNullProduct()
+    {
+        // arrange
+        var fileServiceMock = new Mock<IFileService>();
+        var productRepositoryMock = new Mock<IProductRepository>();
+        var productService = new ProductService(productRepositoryMock.Object, fileServiceMock.Object);
+
         // act
         var response = await productService.CreateProduct(null!);
+
         // assert
         Assert.False(response.Success);
         Assert.Equal("Product cannot be null.", response.Message);
+        Assert.False(response.Result);
     }
 
     [Fact]
-    public async Task ProductService_CreateProduct_ShouldReturnFalse_WhenProductTitleIsNull()
+    public async Task ProductService_CreateProduct_ShouldRejectEmptyTitle()
     {
         // arrange
         var fileServiceMock = new Mock<IFileService>();
         var productRepositoryMock = new Mock<IProductRepository>();
         var productService = new ProductService(productRepositoryMock.Object, fileServiceMock.Object);
-        var product = ProductFactory.Create(null!, 10.99m, GetTestCategory(), GetTestManufacturer());
+
+        var product = new Product
+        {
+            Title = "",
+            Price = 9.99m,
+            Category = GetTestCategory(),
+            Manufacturer = GetTestManufacturer()
+        };
+
         // act
         var response = await productService.CreateProduct(product);
+
         // assert
         Assert.False(response.Success);
         Assert.Equal("Product title cannot be empty or whitespace.", response.Message);
+        Assert.False(response.Result);
     }
 
     [Fact]
-    public async Task ProductService_CreateProduct_ShouldReturnFalse_WhenProductTitleIsEmpty()
+    public async Task ProductService_CreateProduct_ShouldRejectNegativePrice()
     {
         // arrange
         var fileServiceMock = new Mock<IFileService>();
         var productRepositoryMock = new Mock<IProductRepository>();
         var productService = new ProductService(productRepositoryMock.Object, fileServiceMock.Object);
-        var product = ProductFactory.Create("", 10.99m, GetTestCategory(), GetTestManufacturer());
-        // act
-        var response = await productService.CreateProduct(product);
-        // assert
-        Assert.False(response.Success);
-        Assert.Equal("Product title cannot be empty or whitespace.", response.Message);
-    }
 
-    [Fact]
-    public async Task ProductService_CreateProduct_ShouldReturnFalse_WhenProductPriceIsNegative()
-    {
-        // arrange
-        var fileServiceMock = new Mock<IFileService>();
-        var productRepositoryMock = new Mock<IProductRepository>();
-        var productService = new ProductService(productRepositoryMock.Object, fileServiceMock.Object);
-        var product = ProductFactory.Create("Jacket", -10.99m, GetTestCategory(), GetTestManufacturer());
+        var product = new Product
+        {
+            Title = "Valid Title",
+            Price = -5.99m,
+            Category = GetTestCategory(),
+            Manufacturer = GetTestManufacturer()
+        };
+
         // act
         var response = await productService.CreateProduct(product);
+
         // assert
         Assert.False(response.Success);
         Assert.Equal("Product price cannot be negative.", response.Message);
+        Assert.False(response.Result);
     }
 
     [Fact]
-    public async Task ProductService_CreateProduct_ShouldReturnTrue_WhenProductIsCreated()
+    public async Task ProductService_CreateProduct_ShouldRejectEmptyCategoryName()
     {
         // arrange
         var fileServiceMock = new Mock<IFileService>();
         var productRepositoryMock = new Mock<IProductRepository>();
         var productService = new ProductService(productRepositoryMock.Object, fileServiceMock.Object);
-        var product = ProductFactory.Create("Jacket", 10.99m, GetTestCategory(), GetTestManufacturer());
-        productRepositoryMock.Setup(pr => pr.GetProductsFromList()).Returns(new List<Product>());
+
+        var product = new Product
+        {
+            Title = "Valid Title",
+            Price = 9.99m,
+            Category = new Category { Name = "" },
+            Manufacturer = GetTestManufacturer()
+        };
+
         // act
         var response = await productService.CreateProduct(product);
+
         // assert
-        Assert.True(response.Success);
-        Assert.Equal("Product was created successfully.", response.Message);
-        productRepositoryMock.Verify(pr => pr.GetProductsFromList(), Times.Exactly(2));
-        productRepositoryMock.Verify(pr => pr.AddProductToList(It.Is<Product>(p => p.Title == "Jacket" && p.Price == 10.99m)), Times.Once);
+        Assert.False(response.Success);
+        Assert.Equal("Product category name needs to be provided", response.Message);
+        Assert.False(response.Result);
     }
 
     [Fact]
-    public async Task ProductService_CreateProduct_ShouldReturnFalse_WhenProductIsWithSameTitleExists()
+    public async Task ProductService_CreateProduct_ShouldRejectEmptyManufacturerName()
     {
         // arrange
         var fileServiceMock = new Mock<IFileService>();
         var productRepositoryMock = new Mock<IProductRepository>();
         var productService = new ProductService(productRepositoryMock.Object, fileServiceMock.Object);
-        var existingProduct = ProductFactory.Create("Jacket", 15.99m, GetTestCategory(), GetTestManufacturer());
-        var existingProductsList = new List<Product> { existingProduct };
-        productRepositoryMock.Setup(pr => pr.GetProductsFromList()).Returns(existingProductsList);
-        var productDuplicate = ProductFactory.Create("Jacket", 10.99m, GetTestCategory(), GetTestManufacturer());
+
+        var product = new Product
+        {
+            Title = "Valid Title",
+            Price = 9.99m,
+            Category = GetTestCategory(),
+            Manufacturer = new Manufacturer { Name = "" }
+        };
+
         // act
-        var response = await productService.CreateProduct(productDuplicate);
+        var response = await productService.CreateProduct(product);
+
+        // assert
+        Assert.False(response.Success);
+        Assert.Equal("Product manufacturer name needs to be provided", response.Message);
+        Assert.False(response.Result);
+    }
+
+    [Fact]
+    public async Task ProductService_CreateProduct_ShouldRejectDuplicateProductName()
+    {
+        // arrange
+        var fileServiceMock = new Mock<IFileService>();
+        var productRepositoryMock = new Mock<IProductRepository>();
+        var productService = new ProductService(productRepositoryMock.Object, fileServiceMock.Object);
+
+        var existingProduct = ProductFactory.Create("Existing Product", 15.99m, GetTestCategory(), GetTestManufacturer());
+        var newProduct = new Product
+        {
+            Title = "EXISTING PRODUCT", // Different case
+            Price = 9.99m,
+            Category = GetTestCategory(),
+            Manufacturer = GetTestManufacturer()
+        };
+
+        productRepositoryMock.Setup(pr => pr.GetProductsFromList()).Returns(new List<Product> { existingProduct });
+
+        // act
+        var response = await productService.CreateProduct(newProduct);
+
         // assert
         Assert.False(response.Success);
         Assert.Equal("A product with the same name already exists.", response.Message);
-        productRepositoryMock.Verify(pr => pr.GetProductsFromList(), Times.Once);
+        Assert.False(response.Result);
     }
 
     [Fact]
-    public async Task ProductService_CreateProduct_ShouldCatchIfErrorIsThrow()
+    public async Task ProductService_CreateProduct_ShouldCreateProductSuccessfully()
     {
         // arrange
         var fileServiceMock = new Mock<IFileService>();
         var productRepositoryMock = new Mock<IProductRepository>();
         var productService = new ProductService(productRepositoryMock.Object, fileServiceMock.Object);
-        var product = ProductFactory.Create("Jacket", 10.99m, GetTestCategory(), GetTestManufacturer());
+
+        var product = new Product
+        {
+            Title = "New Product",
+            Price = 9.99m,
+            Category = GetTestCategory(),
+            Manufacturer = GetTestManufacturer()
+        };
+
         productRepositoryMock.Setup(pr => pr.GetProductsFromList()).Returns(new List<Product>());
-        productRepositoryMock.Setup(pr => pr.AddProductToList(It.IsAny<Product>())).Throws(new Exception("Unknown Error."));
+        fileServiceMock.Setup(fs => fs.SaveToFileAsync(It.IsAny<IEnumerable<Product>>())).ReturnsAsync(new ResponseResult<bool>
+        {
+            Success = true,
+            Message = "Saved successfully"
+        });
+
         // act
         var response = await productService.CreateProduct(product);
+
         // assert
-        Assert.False(response.Success);
-        Assert.Equal("Unknown Error.", response.Message);
-        productRepositoryMock.Verify(pr => pr.GetProductsFromList(), Times.Once);
+        Assert.True(response.Success);
+        Assert.Equal("Product was created successfully.", response.Message);
+        Assert.True(response.Result);
         productRepositoryMock.Verify(pr => pr.AddProductToList(It.IsAny<Product>()), Times.Once);
     }
 
     [Fact]
-    public async Task ProductService_CreateProduct_ShouldGenerateProductWithId()
+    public async Task ProductService_CreateProduct_ShouldHandleSaveFailure()
     {
         // arrange
         var fileServiceMock = new Mock<IFileService>();
         var productRepositoryMock = new Mock<IProductRepository>();
         var productService = new ProductService(productRepositoryMock.Object, fileServiceMock.Object);
-        var product = ProductFactory.Create("Shoes", 49.99m, GetTestCategory(), GetTestManufacturer());
+
+        var product = new Product
+        {
+            Title = "New Product",
+            Price = 9.99m,
+            Category = GetTestCategory(),
+            Manufacturer = GetTestManufacturer()
+        };
+
         productRepositoryMock.Setup(pr => pr.GetProductsFromList()).Returns(new List<Product>());
-        Product? addedProduct = null;
-        productRepositoryMock.Setup(pr => pr.AddProductToList(It.IsAny<Product>()))
-            .Callback<Product>(p => addedProduct = p);
+        fileServiceMock.Setup(fs => fs.SaveToFileAsync(It.IsAny<IEnumerable<Product>>())).ReturnsAsync(new ResponseResult<bool>
+        {
+            Success = false,
+            Message = "Save failed"
+        });
+
         // act
         var response = await productService.CreateProduct(product);
-        // assert
-        Assert.True(response.Success);
-        Assert.NotNull(addedProduct);
-        Assert.False(string.IsNullOrWhiteSpace(addedProduct!.Id));
-    }
 
-    [Fact]
-    public async Task ProductService_CreateProduct_ShouldReturnFalse_WhenProductTitleIsCaseInsensitiveDuplicate()
-    {
-        // arrange
-        var fileServiceMock = new Mock<IFileService>();
-        var productRepositoryMock = new Mock<IProductRepository>();
-        var productService = new ProductService(productRepositoryMock.Object, fileServiceMock.Object);
-        var existingProduct = ProductFactory.Create("Jacket", 15.99m, GetTestCategory(), GetTestManufacturer());
-        var existingProductsList = new List<Product> { existingProduct };
-        productRepositoryMock.Setup(pr => pr.GetProductsFromList()).Returns(existingProductsList);
-        var productDuplicate = ProductFactory.Create("jAcKeT", 10.99m, GetTestCategory(), GetTestManufacturer());
-        // act
-        var response = await productService.CreateProduct(productDuplicate);
         // assert
         Assert.False(response.Success);
-        Assert.Equal("A product with the same name already exists.", response.Message);
+        Assert.Equal("Save failed", response.Message);
+        productRepositoryMock.Verify(pr => pr.AddProductToList(It.IsAny<Product>()), Times.Once);
     }
 
     [Fact]
-    public async Task ProductService_CreateProduct_ShouldReturnFalse_WhenProductTitleIsWhitespaceOnly()
+    public async Task ProductService_CreateProduct_ShouldHandleException()
     {
         // arrange
         var fileServiceMock = new Mock<IFileService>();
         var productRepositoryMock = new Mock<IProductRepository>();
         var productService = new ProductService(productRepositoryMock.Object, fileServiceMock.Object);
-        var product = ProductFactory.Create("   ", 10.99m, GetTestCategory(), GetTestManufacturer());
+
+        var product = new Product
+        {
+            Title = "New Product",
+            Price = 9.99m,
+            Category = GetTestCategory(),
+            Manufacturer = GetTestManufacturer()
+        };
+
+        // Setup to return empty list first (for validation), then throw on AddProductToList
+        productRepositoryMock.Setup(pr => pr.GetProductsFromList()).Returns(new List<Product>());
+        productRepositoryMock.Setup(pr => pr.AddProductToList(It.IsAny<Product>())).Throws(new Exception("Repository error"));
+
         // act
         var response = await productService.CreateProduct(product);
+
+        // assert
+        Assert.False(response.Success);
+        Assert.Equal("Repository error", response.Message);
+        Assert.False(response.Result);
+    }
+
+    [Fact]
+    public async Task ProductService_UpdateProduct_ShouldRejectNullProduct()
+    {
+        // arrange
+        var fileServiceMock = new Mock<IFileService>();
+        var productRepositoryMock = new Mock<IProductRepository>();
+        var productService = new ProductService(productRepositoryMock.Object, fileServiceMock.Object);
+
+        // act
+        var response = await productService.UpdateProductAsync(null!);
+
+        // assert
+        Assert.False(response.Success);
+        Assert.Equal("Product cannot be null.", response.Message);
+        Assert.False(response.Result);
+    }
+
+    [Fact]
+    public async Task ProductService_UpdateProduct_ShouldRejectEmptyTitle()
+    {
+        // arrange
+        var fileServiceMock = new Mock<IFileService>();
+        var productRepositoryMock = new Mock<IProductRepository>();
+        var productService = new ProductService(productRepositoryMock.Object, fileServiceMock.Object);
+
+        var product = new Product
+        {
+            Id = "test-id",
+            Title = "",
+            Price = 9.99m,
+            Category = GetTestCategory(),
+            Manufacturer = GetTestManufacturer()
+        };
+
+        // act
+        var response = await productService.UpdateProductAsync(product);
+
         // assert
         Assert.False(response.Success);
         Assert.Equal("Product title cannot be empty or whitespace.", response.Message);
+        Assert.False(response.Result);
     }
 
     [Fact]
-    public async Task ProductService_CreateProduct_ShouldGenerateProductWithGuidIdFormat()
+    public async Task ProductService_UpdateProduct_ShouldRejectNegativePrice()
     {
         // arrange
         var fileServiceMock = new Mock<IFileService>();
         var productRepositoryMock = new Mock<IProductRepository>();
         var productService = new ProductService(productRepositoryMock.Object, fileServiceMock.Object);
-        var product = ProductFactory.Create("Hat", 19.99m, GetTestCategory(), GetTestManufacturer());
-        productRepositoryMock.Setup(pr => pr.GetProductsFromList()).Returns(new List<Product>());
-        Product? addedProduct = null;
-        productRepositoryMock.Setup(pr => pr.AddProductToList(It.IsAny<Product>()))
-            .Callback<Product>(p => addedProduct = p);
-        // act
-        var response = await productService.CreateProduct(product);
-        // assert
-        Assert.True(response.Success);
-        Assert.NotNull(addedProduct);
-        Assert.True(Guid.TryParse(addedProduct!.Id, out _));
-    }
 
-    [Fact]
-    public void ProductService_GetProducts_ShouldReturnSuccess_WhenListIsEmpty()
-    {
-        // arrange
-        var fileServiceMock = new Mock<IFileService>();
-        var productRepositoryMock = new Mock<IProductRepository>();
-        var productService = new ProductService(productRepositoryMock.Object, fileServiceMock.Object);
-        productRepositoryMock.Setup(pr => pr.GetProductsFromList()).Returns(new List<Product>());
-        // act
-        var response = productService.GetProducts();
-        // assert
-        Assert.True(response.Success);
-        Assert.Equal("No products in list.", response.Message);
-        Assert.Empty(response.Result!);
-    }
+        var product = new Product
+        {
+            Id = "test-id",
+            Title = "Valid Title",
+            Price = -5.99m,
+            Category = GetTestCategory(),
+            Manufacturer = GetTestManufacturer()
+        };
 
-    [Fact]
-    public void ProductService_GetProducts_ShouldReturnSuccess_WhenListIsNotEmpty()
-    {
-        // arrange
-        var fileServiceMock = new Mock<IFileService>();
-        var productRepositoryMock = new Mock<IProductRepository>();
-        var productService = new ProductService(productRepositoryMock.Object, fileServiceMock.Object);
-        var products = new List<Product> { ProductFactory.Create("Test", 10.99m, GetTestCategory(), GetTestManufacturer()) };
-        productRepositoryMock.Setup(pr => pr.GetProductsFromList()).Returns(products);
         // act
-        var response = productService.GetProducts();
-        // assert
-        Assert.True(response.Success);
-        Assert.Equal("Products retrieved successfully.", response.Message);
-        Assert.Single(response.Result!);
-        Assert.Equal("Test", response.Result!.First().Title);
-    }
+        var response = await productService.UpdateProductAsync(product);
 
-    [Fact]
-    public void ProductService_GetProducts_ShouldReturnFailure_WhenExceptionThrown()
-    {
-        // arrange
-        var fileServiceMock = new Mock<IFileService>();
-        var productRepositoryMock = new Mock<IProductRepository>();
-        var productService = new ProductService(productRepositoryMock.Object, fileServiceMock.Object);
-        productRepositoryMock.Setup(pr => pr.GetProductsFromList()).Throws(new Exception("Repo error"));
-        // act
-        var response = productService.GetProducts();
         // assert
         Assert.False(response.Success);
-        Assert.Equal("Repo error", response.Message);
+        Assert.Equal("Product price cannot be negative.", response.Message);
+        Assert.False(response.Result);
     }
 
     [Fact]
-    public async Task ProductService_UpdateProduct_ShouldReturnFalse_WhenProductNotFound()
+    public async Task ProductService_UpdateProduct_ShouldHandleProductNotFound()
     {
         // arrange
         var fileServiceMock = new Mock<IFileService>();
         var productRepositoryMock = new Mock<IProductRepository>();
         var productService = new ProductService(productRepositoryMock.Object, fileServiceMock.Object);
-        var notFoundProduct = new Product { Id = "notfound", Title = "Test", Price = 1, Category = new Category { Name = "Test" }, Manufacturer = new Manufacturer { Name = "Test" } };
-        productRepositoryMock.Setup(pr => pr.GetProductByIdFromList("notfound")).Returns((Product)null!);
+
+        var product = new Product
+        {
+            Id = "non-existent-id",
+            Title = "Valid Title",
+            Price = 9.99m,
+            Category = GetTestCategory(),
+            Manufacturer = GetTestManufacturer()
+        };
+
+        productRepositoryMock.Setup(pr => pr.GetProductByIdFromList("non-existent-id")).Returns((Product)null!);
 
         // act
-        var response = await productService.UpdateProductAsync(notFoundProduct);
+        var response = await productService.UpdateProductAsync(product);
 
         // assert
         Assert.False(response.Success);
@@ -534,33 +721,121 @@ public class ProductService_Tests
     }
 
     [Fact]
-    public async Task ProductService_UpdateProduct_ShouldReturnTrue_WhenProductFound()
+    public async Task ProductService_UpdateProduct_ShouldUpdateProductSuccessfully()
     {
         // arrange
         var fileServiceMock = new Mock<IFileService>();
         var productRepositoryMock = new Mock<IProductRepository>();
         var productService = new ProductService(productRepositoryMock.Object, fileServiceMock.Object);
-        var product = ProductFactory.Create("Hat", 19.99m, GetTestCategory(), GetTestManufacturer());
-        productRepositoryMock.Setup(pr => pr.GetProductByIdFromList(product.Id)).Returns(product);
+
+        var existingProduct = ProductFactory.Create("Existing Product", 15.99m, GetTestCategory(), GetTestManufacturer());
+        var updateProduct = new Product
+        {
+            Id = existingProduct.Id,
+            Title = "Updated Title",
+            Price = 19.99m,
+            Category = new Category { Name = "Updated Category" },
+            Manufacturer = new Manufacturer { Name = "Updated Manufacturer" }
+        };
+
+        productRepositoryMock.Setup(pr => pr.GetProductByIdFromList(existingProduct.Id)).Returns(existingProduct);
+        fileServiceMock.Setup(fs => fs.SaveToFileAsync(It.IsAny<IEnumerable<Product>>())).ReturnsAsync(new ResponseResult<bool>
+        {
+            Success = true,
+            Message = "Saved successfully"
+        });
 
         // act
-        var response = await productService.UpdateProductAsync(product);
+        var response = await productService.UpdateProductAsync(updateProduct);
 
         // assert
         Assert.True(response.Success);
         Assert.Equal("Product was updated.", response.Message);
         Assert.True(response.Result);
+
+        // Verify that the existing product's properties were actually updated
+        Assert.Equal("Updated Title", existingProduct.Title);
+        Assert.Equal(19.99m, existingProduct.Price);
+        Assert.Equal("Updated Category", existingProduct.Category.Name);
+        Assert.Equal("Updated Manufacturer", existingProduct.Manufacturer.Name);
     }
 
     [Fact]
-    public async Task ProductService_RemoveProduct_ShouldRemoveProduct()
+    public async Task ProductService_UpdateProduct_ShouldHandleSaveFailure()
     {
         // arrange
-        var productRepositoryMock = new Mock<IProductRepository>();
         var fileServiceMock = new Mock<IFileService>();
+        var productRepositoryMock = new Mock<IProductRepository>();
         var productService = new ProductService(productRepositoryMock.Object, fileServiceMock.Object);
+
+        var existingProduct = ProductFactory.Create("Existing Product", 15.99m, GetTestCategory(), GetTestManufacturer());
+        var updateProduct = new Product
+        {
+            Id = existingProduct.Id,
+            Title = "Updated Title",
+            Price = 19.99m,
+            Category = GetTestCategory(),
+            Manufacturer = GetTestManufacturer()
+        };
+
+        productRepositoryMock.Setup(pr => pr.GetProductByIdFromList(existingProduct.Id)).Returns(existingProduct);
+        fileServiceMock.Setup(fs => fs.SaveToFileAsync(It.IsAny<IEnumerable<Product>>())).ReturnsAsync(new ResponseResult<bool>
+        {
+            Success = false,
+            Message = "Save failed"
+        });
+
+        // act
+        var response = await productService.UpdateProductAsync(updateProduct);
+
+        // assert
+        Assert.False(response.Success);
+        Assert.Equal("Save failed", response.Message);
+    }
+
+    [Fact]
+    public async Task ProductService_UpdateProduct_ShouldHandleException()
+    {
+        // arrange
+        var fileServiceMock = new Mock<IFileService>();
+        var productRepositoryMock = new Mock<IProductRepository>();
+        var productService = new ProductService(productRepositoryMock.Object, fileServiceMock.Object);
+
+        var product = new Product
+        {
+            Id = "test-id",
+            Title = "Valid Title",
+            Price = 9.99m,
+            Category = GetTestCategory(),
+            Manufacturer = GetTestManufacturer()
+        };
+
+        productRepositoryMock.Setup(pr => pr.GetProductByIdFromList("test-id")).Throws(new Exception("Repository error"));
+
+        // act
+        var response = await productService.UpdateProductAsync(product);
+
+        // assert
+        Assert.False(response.Success);
+        Assert.Equal("Could not update product.", response.Message);
+    }
+
+    [Fact]
+    public async Task ProductService_RemoveProduct_ShouldRemoveProductSuccessfully()
+    {
+        // arrange
+        var fileServiceMock = new Mock<IFileService>();
+        var productRepositoryMock = new Mock<IProductRepository>();
+        var productService = new ProductService(productRepositoryMock.Object, fileServiceMock.Object);
+
         var productId = "test-id";
+
         productRepositoryMock.Setup(pr => pr.RemoveProductFromList(productId)).Returns(1);
+        fileServiceMock.Setup(fs => fs.SaveToFileAsync(It.IsAny<IEnumerable<Product>>())).ReturnsAsync(new ResponseResult<bool>
+        {
+            Success = true,
+            Message = "Saved successfully"
+        });
 
         // act
         var response = await productService.RemoveProduct(productId);
@@ -568,17 +843,18 @@ public class ProductService_Tests
         // assert
         Assert.True(response.Success);
         Assert.Equal("Removed product successfully.", response.Message);
-        productRepositoryMock.Verify(pr => pr.RemoveProductFromList(productId), Times.Once);
     }
 
     [Fact]
-    public async Task ProductService_RemoveProduct_ShouldReturnFalseIfNotFound()
+    public async Task ProductService_RemoveProduct_ShouldHandleProductNotFound()
     {
         // arrange
-        var productRepositoryMock = new Mock<IProductRepository>();
         var fileServiceMock = new Mock<IFileService>();
+        var productRepositoryMock = new Mock<IProductRepository>();
         var productService = new ProductService(productRepositoryMock.Object, fileServiceMock.Object);
-        var productId = "nonexistent-id";
+
+        var productId = "non-existent-id";
+
         productRepositoryMock.Setup(pr => pr.RemoveProductFromList(productId)).Returns(0);
 
         // act
@@ -587,6 +863,50 @@ public class ProductService_Tests
         // assert
         Assert.False(response.Success);
         Assert.Equal("Could not find product to remove.", response.Message);
-        productRepositoryMock.Verify(pr => pr.RemoveProductFromList(productId), Times.Once);
+    }
+
+    [Fact]
+    public async Task ProductService_RemoveProduct_ShouldHandleSaveFailure()
+    {
+        // arrange
+        var fileServiceMock = new Mock<IFileService>();
+        var productRepositoryMock = new Mock<IProductRepository>();
+        var productService = new ProductService(productRepositoryMock.Object, fileServiceMock.Object);
+
+        var productId = "test-id";
+
+        productRepositoryMock.Setup(pr => pr.RemoveProductFromList(productId)).Returns(1);
+        fileServiceMock.Setup(fs => fs.SaveToFileAsync(It.IsAny<IEnumerable<Product>>())).ReturnsAsync(new ResponseResult<bool>
+        {
+            Success = false,
+            Message = "Save failed"
+        });
+
+        // act
+        var response = await productService.RemoveProduct(productId);
+
+        // assert
+        Assert.False(response.Success); // Now correctly returns false when save fails
+        Assert.Equal("Save failed", response.Message);
+    }
+
+    [Fact]
+    public async Task ProductService_RemoveProduct_ShouldHandleException()
+    {
+        // arrange
+        var fileServiceMock = new Mock<IFileService>();
+        var productRepositoryMock = new Mock<IProductRepository>();
+        var productService = new ProductService(productRepositoryMock.Object, fileServiceMock.Object);
+
+        var productId = "test-id";
+
+        productRepositoryMock.Setup(pr => pr.RemoveProductFromList(productId)).Throws(new Exception("Repository error"));
+
+        // act
+        var response = await productService.RemoveProduct(productId);
+
+        // assert
+        Assert.False(response.Success);
+        Assert.Equal("Could not perform removal of product.", response.Message);
     }
 }

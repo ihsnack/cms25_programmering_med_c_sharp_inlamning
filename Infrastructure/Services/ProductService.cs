@@ -242,7 +242,18 @@ public class ProductService(IProductRepository productRepository, IFileService f
             var newProduct = ProductFactory.Create(product.Title, product.Price, product.Category, product.Manufacturer);
             _productRepository.AddProductToList(newProduct);
 
-            await SaveProductsAsync();
+            var saveResponse = await SaveProductsAsync();
+
+            if (!saveResponse.Success)
+            {
+                return new ResponseResult<bool>
+                {
+                    Success = false,
+                    Message = $"{saveResponse.Message}",
+                };
+            }
+
+
             return new ResponseResult<bool>
             {
                 Success = true,
@@ -326,10 +337,22 @@ public class ProductService(IProductRepository productRepository, IFileService f
 
             }
 
-            productToUpdate.Title = productToUpdate.Title;
-            productToUpdate.Price = productToUpdate.Price;
+            productToUpdate.Title = product.Title;
+            productToUpdate.Price = product.Price;
+            productToUpdate.Category = product.Category;
+            productToUpdate.Manufacturer = product.Manufacturer;
 
-            await SaveProductsAsync();
+            var saveResponse = await SaveProductsAsync();
+
+            if (!saveResponse.Success)
+            {
+                return new ResponseResult<bool>
+                {
+                    Success = false,
+                    Message = $"{saveResponse.Message}",
+                };
+            }
+
 
 
             return new ResponseResult<bool>
@@ -361,7 +384,16 @@ public class ProductService(IProductRepository productRepository, IFileService f
             if (result > 0)
             {
 
-                await SaveProductsAsync();
+                var saveReponse = await SaveProductsAsync();
+
+                if (!saveReponse.Success)
+                {
+                    return new ResponseResult<bool>
+                    {
+                        Success = false,
+                        Message = $"{saveReponse.Message}",
+                    };
+                }
 
                 return new ResponseResult<bool>
                 {
