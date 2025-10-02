@@ -73,8 +73,7 @@ public class ProductService(IProductRepository productRepository, IFileService f
                     };
                 }
 
-
-                if (string.IsNullOrWhiteSpace(product.Category.Name))
+                if (product.Category == null || string.IsNullOrWhiteSpace(product.Category.Name))
                 {
                     return new ResponseResult<IEnumerable<Product>>
                     {
@@ -84,7 +83,7 @@ public class ProductService(IProductRepository productRepository, IFileService f
                     };
                 }
 
-                if (string.IsNullOrWhiteSpace(product.Manufacturer.Name))
+                if (product.Manufacturer == null || string.IsNullOrWhiteSpace(product.Manufacturer.Name))
                 {
                     return new ResponseResult<IEnumerable<Product>>
                     {
@@ -120,6 +119,7 @@ public class ProductService(IProductRepository productRepository, IFileService f
             _cts.Dispose();
         }
     }
+    
     public async Task<ResponseResult<bool>> SaveProductsAsync()
     {
         try
@@ -238,7 +238,7 @@ public class ProductService(IProductRepository productRepository, IFileService f
                 };
             }
 
-            if (string.IsNullOrWhiteSpace(product.Category.Name))
+            if (product.Category == null || string.IsNullOrWhiteSpace(product.Category.Name))
             {
                 return new ResponseResult<bool>
                 {
@@ -248,7 +248,7 @@ public class ProductService(IProductRepository productRepository, IFileService f
                 };
             }
 
-            if (string.IsNullOrWhiteSpace(product.Manufacturer.Name))
+            if (product.Manufacturer == null || string.IsNullOrWhiteSpace(product.Manufacturer.Name))
             {
                 return new ResponseResult<bool>
                 {
@@ -306,6 +306,7 @@ public class ProductService(IProductRepository productRepository, IFileService f
             _cts.Dispose();
         }
     }
+    
     public async Task<ResponseResult<bool>> UpdateProductAsync(Product product)
     {
         try
@@ -340,7 +341,7 @@ public class ProductService(IProductRepository productRepository, IFileService f
                 };
             }
 
-            if (string.IsNullOrWhiteSpace(product.Category.Name))
+            if (product.Category == null || string.IsNullOrWhiteSpace(product.Category.Name))
             {
                 return new ResponseResult<bool>
                 {
@@ -350,7 +351,7 @@ public class ProductService(IProductRepository productRepository, IFileService f
                 };
             }
 
-            if (string.IsNullOrWhiteSpace(product.Manufacturer.Name))
+            if (product.Manufacturer == null || string.IsNullOrWhiteSpace(product.Manufacturer.Name))
             {
                 return new ResponseResult<bool>
                 {
