@@ -8,6 +8,16 @@ namespace Infrastructure.Tests.Repositories;
 /// </summary>
 public class FileRepository_Tests
 {
+    private void CleanupTestFile()
+    {
+        var dataDir = Path.Combine(AppContext.BaseDirectory, "Data");
+        var filePath = Path.Combine(dataDir, "products.json");
+        if (File.Exists(filePath))
+        {
+            File.Delete(filePath);
+        }
+    }
+
     [Fact]
     public async Task FileRepository_GetContentFromFile_ShouldCallFileReadMethods()
     {
@@ -44,10 +54,7 @@ public class FileRepository_Tests
         finally
         {
             // cleanup
-            if (File.Exists(filePath))
-            {
-                File.Delete(filePath);
-            }
+            CleanupTestFile();
         }
     }
 
@@ -55,6 +62,7 @@ public class FileRepository_Tests
     public async Task FileRepository_GetContentFromFile_ShouldReturnEmptyStringWhenFileDoesNotExist()
     {
         // arrange
+        CleanupTestFile();
         var fileRepository = new FileRepository();
 
         // act
@@ -84,11 +92,7 @@ public class FileRepository_Tests
         }
         finally
         {
-            // cleanup
-            if (File.Exists(filePath))
-            {
-                File.Delete(filePath);
-            }
+            CleanupTestFile();
         }
     }
 }

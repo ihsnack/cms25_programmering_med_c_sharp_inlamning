@@ -30,9 +30,7 @@ namespace Infrastructure.Repositories
                 Directory.CreateDirectory(_directoryPath);
             }
 
-            using var sw = new StreamWriter(_filePath);
-            await sw.WriteAsync(content.AsMemory(), cancellationToken);
-            await sw.FlushAsync(cancellationToken);
+            await File.WriteAllTextAsync(_filePath, content, cancellationToken);
         }
     }
 }
