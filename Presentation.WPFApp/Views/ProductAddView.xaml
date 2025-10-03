@@ -21,16 +21,16 @@
         <TextBlock Text="{Binding ErrorMessage}" Padding="5" Grid.Row="1" Foreground="Red" />
         <StackPanel Grid.Row="2">
             <Label Content="Title" Margin="0 5 0 0" FontWeight="Bold"/>
-            <TextBox x:Name="Title" Text="{Binding Product.Title}" Padding="5" />
+            <TextBox Text="{Binding Product.Title}" Padding="5" />
             <Label Content="Price" Margin="0 5 0 0" FontWeight="Bold" />
-            <TextBox x:Name="Price"  Text="{Binding PriceText, UpdateSourceTrigger=PropertyChanged}" Padding="5" />
+            <TextBox Text="{Binding PriceText, UpdateSourceTrigger=PropertyChanged}" Padding="5" />
             <Label Content="Category" Margin="0 5 0 0"  FontWeight="Bold"/>
-            <TextBox x:Name="Category"  Text="{Binding Product.Category.Name}" Padding="5" />
+            <TextBox Text="{Binding Product.Category.Name}" Padding="5" />
             <Label Content="Manufacturer" Margin="0 5 0 0" FontWeight="Bold" />
-            <TextBox x:Name="Manufacturer"  Text="{Binding Product.Manufacturer.Name}" Padding="5" />
+            <TextBox Text="{Binding Product.Manufacturer.Name}" Padding="5" />
         </StackPanel>
         <UniformGrid Grid.Row="3" Rows="1" Columns="2" Margin="0 40 0 0">
-            <Button x:Name="AddProduct" Content="Add Product" Padding="5 8" Command="{Binding SaveProductCommand}" Margin="0 0 10 0" />
+            <Button Content="Add Product" Padding="5 8" Command="{Binding SaveProductCommand}" Margin="0 0 10 0" />
             <Button Content="Cancel" Command="{Binding NavigateToListCommand}" Padding="5 8" Margin="10 0 0 0"/>
         </UniformGrid>
     </Grid>
