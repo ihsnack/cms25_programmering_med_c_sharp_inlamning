@@ -15,6 +15,9 @@ public partial class ProductDetailsViewModel(IServiceProvider serviceProvider, I
     [ObservableProperty]
     public Product _product = new();
 
+    [ObservableProperty]
+    public string _errorMessage = null!;
+
     [RelayCommand]
     public void NavigateToList()
     {
@@ -35,10 +38,17 @@ public partial class ProductDetailsViewModel(IServiceProvider serviceProvider, I
     [RelayCommand]
     public async Task Delete()
     {
-        await _productService.RemoveProduct(Product.Id);
+        ErrorMessage = null!;
+
+        var response = await _productService.RemoveProduct(Product.Id);
+
+        if (!response.Success)
+        {
+            ErrorMessage = response.Message!;
+            return;
+        }
 
         NavigateToList();
-
     }
 
 }

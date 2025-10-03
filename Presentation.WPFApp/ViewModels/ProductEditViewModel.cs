@@ -27,6 +27,8 @@ public partial class ProductEditViewModel(IServiceProvider serviceProvider, IPro
     [RelayCommand]
     public async Task Save()
     {
+        ErrorMessage = null!;
+
         var response = await _productService.UpdateProductAsync(Product);
 
         if (!response.Success)
