@@ -9,7 +9,7 @@
              d:DataContext="{d:DesignInstance Type=viewmodels:ProductEditViewModel}"
              xmlns:viewmodels="clr-namespace:Presentation.WPFApp.ViewModels"
              xmlns:models="clr-namespace:Infrastructure.Models;assembly=Infrastructure"
-             d:DesignHeight="800" d:DesignWidth="800">
+             d:DesignHeight="770" d:DesignWidth="600">
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto" />
@@ -21,7 +21,7 @@
             <RowDefinition Height="Auto" />
             <RowDefinition Height="Auto" />
         </Grid.RowDefinitions>
-        <TextBlock Text="Product Edit" Padding="5" FontSize="20" FontWeight="Bold" Grid.Row="0" />
+        <TextBlock Text="Product Edit" Padding="5" FontSize="20" FontWeight="Bold" Grid.Row="0" VerticalAlignment="Center" />
         <TextBlock Text="{Binding ErrorMessage}" Padding="5" Grid.Row="1" Foreground="Red" />
         <StackPanel Grid.Row="2">
             <Label Content="Title" Margin="0 5 0 0" />
