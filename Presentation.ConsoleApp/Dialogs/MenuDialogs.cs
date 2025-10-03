@@ -86,13 +86,14 @@ public class MenuDialogs : IMenuDialogs
         {
             priceInput = Dialogs.Prompt("Enter Price (use dot as decimal separator): ");
 
-            if (!decimal.TryParse(priceInput, styles, CultureInfo.InvariantCulture, out priceValue))
+            if (!decimal.TryParse(priceInput, styles, CultureInfo.InvariantCulture, out priceValue) || priceValue <= 0)
             {
                 Console.WriteLine();
-                Console.WriteLine("Please enter a valid positive price. Press any key.");
+                Console.WriteLine("Please enter a valid price greater than zero. Press any key.");
                 Console.WriteLine();
+                Console.ReadKey();
             }
-        } while (!decimal.TryParse(priceInput, styles, CultureInfo.InvariantCulture, out priceValue));
+        } while (!decimal.TryParse(priceInput, styles, CultureInfo.InvariantCulture, out priceValue) || priceValue <= 0);
 
         Console.WriteLine();
 

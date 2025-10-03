@@ -160,7 +160,31 @@ public class ProductService_Tests
 
         // assert
         Assert.False(response.Success);
-        Assert.Equal("Product has an invalid negative price. File load aborted.", response.Message);
+        Assert.Equal("Product has an invalid price. Price must be greater than zero. File load aborted.", response.Message);
+    }
+
+    [Fact]
+    public async Task ProductService_LoadProducts_ShouldRejectProductsWithZeroPrice()
+    {
+        // arrange
+        var fileServiceMock = new Mock<IFileService>();
+        var productRepositoryMock = new Mock<IProductRepository>();
+        var productService = new ProductService(productRepositoryMock.Object, fileServiceMock.Object);
+
+        var invalidProduct = ProductFactory.Create("Valid Title", 0m, GetTestCategory(), GetTestManufacturer());
+
+        fileServiceMock.Setup(fs => fs.LoadFromFileAsync(It.IsAny<CancellationToken>())).ReturnsAsync(new ResponseResult<IEnumerable<Product>>
+        {
+            Success = true,
+            Result = new List<Product> { invalidProduct }
+        });
+
+        // act
+        var response = await productService.LoadProductsAsync();
+
+        // assert
+        Assert.False(response.Success);
+        Assert.Equal("Product has an invalid price. Price must be greater than zero. File load aborted.", response.Message);
     }
 
     [Fact]
@@ -219,10 +243,6 @@ public class ProductService_Tests
         var productRepositoryMock = new Mock<IProductRepository>();
         var productService = new ProductService(productRepositoryMock.Object, fileServiceMock.Object);
 
-        // Create product with null category to test validation
-
-
-
         var invalidProduct = ProductFactory.Create("Test Product", 9.99m, null!, GetTestManufacturer());
 
         fileServiceMock.Setup(fs => fs.LoadFromFileAsync(It.IsAny<CancellationToken>())).ReturnsAsync(new ResponseResult<IEnumerable<Product>>
@@ -246,7 +266,6 @@ public class ProductService_Tests
         var fileServiceMock = new Mock<IFileService>();
         var productRepositoryMock = new Mock<IProductRepository>();
         var productService = new ProductService(productRepositoryMock.Object, fileServiceMock.Object);
-
 
         var invalidProduct = ProductFactory.Create("Test Product", 9.99m, GetTestCategory(), null!);
 
@@ -464,7 +483,27 @@ public class ProductService_Tests
 
         // assert
         Assert.False(response.Success);
-        Assert.Equal("Product price cannot be negative.", response.Message);
+        Assert.Equal("Product price must be greater than zero.", response.Message);
+        Assert.False(response.Result);
+    }
+
+    [Fact]
+    public async Task ProductService_CreateProduct_ShouldRejectZeroPrice()
+    {
+        // arrange
+        var fileServiceMock = new Mock<IFileService>();
+        var productRepositoryMock = new Mock<IProductRepository>();
+        var productService = new ProductService(productRepositoryMock.Object, fileServiceMock.Object);
+
+
+        var product = ProductFactory.Create("Valid Title", 0m, GetTestCategory(), GetTestManufacturer());
+
+        // act
+        var response = await productService.CreateProduct(product);
+
+        // assert
+        Assert.False(response.Success);
+        Assert.Equal("Product price must be greater than zero.", response.Message);
         Assert.False(response.Result);
     }
 
@@ -515,6 +554,7 @@ public class ProductService_Tests
         var productRepositoryMock = new Mock<IProductRepository>();
         var productService = new ProductService(productRepositoryMock.Object, fileServiceMock.Object);
 
+
         var product = ProductFactory.Create("Valid Title", 9.99m, null!, GetTestManufacturer());
 
         // act
@@ -533,6 +573,7 @@ public class ProductService_Tests
         var fileServiceMock = new Mock<IFileService>();
         var productRepositoryMock = new Mock<IProductRepository>();
         var productService = new ProductService(productRepositoryMock.Object, fileServiceMock.Object);
+
 
         var product = ProductFactory.Create("Valid Title", 9.99m, GetTestCategory(), null!);
 
@@ -694,7 +735,86 @@ public class ProductService_Tests
 
         // assert
         Assert.False(response.Success);
-        Assert.Equal("Product price cannot be negative.", response.Message);
+        Assert.Equal("Product price must be greater than zero.", response.Message);
+        Assert.False(response.Result);
+    }
+
+    [Fact]
+    public async Task ProductService_UpdateProduct_ShouldRejectZeroPrice()
+    {
+        // arrange
+        var fileServiceMock = new Mock<IFileService>();
+        var productRepositoryMock = new Mock<IProductRepository>();
+        var productService = new ProductService(productRepositoryMock.Object, fileServiceMock.Object);
+
+        var product = ProductFactory.Create("Valid Title", 0m, GetTestCategory(), GetTestManufacturer());
+
+        // act
+        var response = await productService.UpdateProductAsync(product);
+
+        // assert
+        Assert.False(response.Success);
+        Assert.Equal("Product price must be greater than zero.", response.Message);
+        Assert.False(response.Result);
+    }
+
+    [Fact]
+    public async Task ProductService_UpdateProduct_ShouldRejectNullProductId()
+    {
+        // arrange
+        var fileServiceMock = new Mock<IFileService>();
+        var productRepositoryMock = new Mock<IProductRepository>();
+        var productService = new ProductService(productRepositoryMock.Object, fileServiceMock.Object);
+
+        var product = ProductFactory.Create("Valid Title", 9.99m, GetTestCategory(), GetTestManufacturer());
+        product.Id = null!; // Set ID to null
+
+        // act
+        var response = await productService.UpdateProductAsync(product);
+
+        // assert
+        Assert.False(response.Success);
+        Assert.Equal("Product ID cannot be null or empty.", response.Message);
+        Assert.False(response.Result);
+    }
+
+    [Fact]
+    public async Task ProductService_UpdateProduct_ShouldRejectEmptyProductId()
+    {
+        // arrange
+        var fileServiceMock = new Mock<IFileService>();
+        var productRepositoryMock = new Mock<IProductRepository>();
+        var productService = new ProductService(productRepositoryMock.Object, fileServiceMock.Object);
+
+        var product = ProductFactory.Create("Valid Title", 9.99m, GetTestCategory(), GetTestManufacturer());
+        product.Id = "";
+
+        // act
+        var response = await productService.UpdateProductAsync(product);
+
+        // assert
+        Assert.False(response.Success);
+        Assert.Equal("Product ID cannot be null or empty.", response.Message);
+        Assert.False(response.Result);
+    }
+
+    [Fact]
+    public async Task ProductService_UpdateProduct_ShouldRejectWhitespaceProductId()
+    {
+        // arrange
+        var fileServiceMock = new Mock<IFileService>();
+        var productRepositoryMock = new Mock<IProductRepository>();
+        var productService = new ProductService(productRepositoryMock.Object, fileServiceMock.Object);
+
+        var product = ProductFactory.Create("Valid Title", 9.99m, GetTestCategory(), GetTestManufacturer());
+        product.Id = "   ";
+
+        // act
+        var response = await productService.UpdateProductAsync(product);
+
+        // assert
+        Assert.False(response.Success);
+        Assert.Equal("Product ID cannot be null or empty.", response.Message);
         Assert.False(response.Result);
     }
 
@@ -899,6 +1019,54 @@ public class ProductService_Tests
         // assert
         Assert.False(response.Success);
         Assert.Equal("Repository error", response.Message);
+    }
+
+    [Fact]
+    public async Task ProductService_RemoveProduct_ShouldRejectNullId()
+    {
+        // arrange
+        var fileServiceMock = new Mock<IFileService>();
+        var productRepositoryMock = new Mock<IProductRepository>();
+        var productService = new ProductService(productRepositoryMock.Object, fileServiceMock.Object);
+
+        // act
+        var response = await productService.RemoveProduct(null!);
+
+        // assert
+        Assert.False(response.Success);
+        Assert.Equal("Product ID cannot be null or empty.", response.Message);
+    }
+
+    [Fact]
+    public async Task ProductService_RemoveProduct_ShouldRejectEmptyId()
+    {
+        // arrange
+        var fileServiceMock = new Mock<IFileService>();
+        var productRepositoryMock = new Mock<IProductRepository>();
+        var productService = new ProductService(productRepositoryMock.Object, fileServiceMock.Object);
+
+        // act
+        var response = await productService.RemoveProduct("");
+
+        // assert
+        Assert.False(response.Success);
+        Assert.Equal("Product ID cannot be null or empty.", response.Message);
+    }
+
+    [Fact]
+    public async Task ProductService_RemoveProduct_ShouldRejectWhitespaceId()
+    {
+        // arrange
+        var fileServiceMock = new Mock<IFileService>();
+        var productRepositoryMock = new Mock<IProductRepository>();
+        var productService = new ProductService(productRepositoryMock.Object, fileServiceMock.Object);
+
+        // act
+        var response = await productService.RemoveProduct("   ");
+
+        // assert
+        Assert.False(response.Success);
+        Assert.Equal("Product ID cannot be null or empty.", response.Message);
     }
 
     [Fact]

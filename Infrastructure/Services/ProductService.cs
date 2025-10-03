@@ -64,12 +64,12 @@ public class ProductService(IProductRepository productRepository, IFileService f
                     };
                 }
 
-                if (product.Price < 0)
+                if (product.Price <= 0)
                 {
                     return new ResponseResult<IEnumerable<Product>>
                     {
                         Success = false,
-                        Message = "Product has an invalid negative price. File load aborted."
+                        Message = "Product has an invalid price. Price must be greater than zero. File load aborted."
                     };
                 }
 
@@ -228,12 +228,12 @@ public class ProductService(IProductRepository productRepository, IFileService f
                     Result = false
                 };
             }
-            if (product.Price < 0)
+            if (product.Price <= 0)
             {
                 return new ResponseResult<bool>
                 {
                     Success = false,
-                    Message = "Product price cannot be negative.",
+                    Message = "Product price must be greater than zero.",
                     Result = false
                 };
             }
@@ -322,6 +322,17 @@ public class ProductService(IProductRepository productRepository, IFileService f
                     Result = false
                 };
             }
+
+            if (string.IsNullOrWhiteSpace(product.Id))
+            {
+                return new ResponseResult<bool>
+                {
+                    Success = false,
+                    Message = "Product ID cannot be null or empty.",
+                    Result = false
+                };
+            }
+
             if (string.IsNullOrWhiteSpace(product.Title))
             {
                 return new ResponseResult<bool>
@@ -331,12 +342,12 @@ public class ProductService(IProductRepository productRepository, IFileService f
                     Result = false
                 };
             }
-            if (product.Price < 0)
+            if (product.Price <= 0)
             {
                 return new ResponseResult<bool>
                 {
                     Success = false,
-                    Message = "Product price cannot be negative.",
+                    Message = "Product price must be greater than zero.",
                     Result = false
                 };
             }
@@ -429,6 +440,15 @@ public class ProductService(IProductRepository productRepository, IFileService f
         try
         {
             _cts = new CancellationTokenSource();
+
+            if (string.IsNullOrWhiteSpace(id))
+            {
+                return new ResponseResult<bool>
+                {
+                    Success = false,
+                    Message = "Product ID cannot be null or empty.",
+                };
+            }
 
             var result = _productRepository.RemoveProductFromList(id);
 
