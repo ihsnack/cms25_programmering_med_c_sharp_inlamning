@@ -9,7 +9,7 @@
              xmlns:viewmodels="clr-namespace:Presentation.WPFApp.ViewModels"
              xmlns:models="clr-namespace:Infrastructure.Models;assembly=Infrastructure"
              Background="white"
-             d:DesignHeight="800" d:DesignWidth="800">
+             d:DesignHeight="770" d:DesignWidth="600">
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto" />
@@ -27,25 +27,27 @@
                 <RowDefinition Height="Auto" />
             </Grid.RowDefinitions>
 
-            <TextBlock Text="Product List" Padding="5" FontSize="20" FontWeight="Bold" HorizontalAlignment="Left" Grid.Column="0" Grid.Row="0" />
+            <TextBlock Text="Product List" Padding="5" FontSize="20" FontWeight="Bold" HorizontalAlignment="Left" Grid.Column="0" Grid.Row="0" VerticalAlignment="Center" />
             <TextBlock Text="{Binding ErrorMessage}" Padding="5" Grid.Row="1" Foreground="Red" Grid.Column="0" />
-            <Button Content="&#xE710;" Padding="12" FontFamily="Segoe MDL2 Assets" Command="{Binding NavigateToAddProductCommand}" HorizontalAlignment="Right" Grid.Column="1" Grid.Row="0" />
+            <Button Content="&#xE710;" Padding="12" FontFamily="Segoe MDL2 Assets" Command="{Binding NavigateToAddProductCommand}" HorizontalAlignment="Right" Grid.Column="1" Grid.Row="0" VerticalAlignment="Center" />
         </Grid>
-        <ListView Grid.Row="1" ItemsSource="{Binding ProductList}" Margin="0 20 0 0" HorizontalContentAlignment="Stretch">
+        <ListView Grid.Row="1" ItemsSource="{Binding ProductList}" Margin="0 20 0 0" HorizontalContentAlignment="Stretch" >
             <ListView.ItemTemplate>
                 <DataTemplate DataType="{x:Type models:Product}">
-                    <Grid HorizontalAlignment="Stretch">
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="auto" />
-                            <ColumnDefinition Width="auto" />
-                            <ColumnDefinition Width="*" />
-                        </Grid.ColumnDefinitions>
-                        
-                        
-                        <TextBlock  Grid.Column="0" Text="{Binding Title}" FontWeight="Bold" Margin="0 17 7 0" />
-                        <TextBlock  Grid.Column="1" Text="{Binding Price}" Margin="0 17 0 17" />
-                        <Button FontFamily="Segoe MDL2 Assets" Content="&#xE712;" Grid.Column="2" CommandParameter="{Binding .}" Command="{Binding DataContext.NavigateToProductDetailsCommand, RelativeSource={RelativeSource AncestorType=UserControl}}" HorizontalAlignment="Right" Padding="12" />
-                    </Grid>
+                    <Border Padding="0 10 0 10">
+                        <Grid HorizontalAlignment="Stretch" VerticalAlignment="Center">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="auto" />
+                                <ColumnDefinition Width="auto" />
+                                <ColumnDefinition Width="*" />
+                            </Grid.ColumnDefinitions>
+                            
+                            
+                            <TextBlock  Grid.Column="0" Text="{Binding Title}" FontWeight="Bold" VerticalAlignment="Center" Margin="0,0,7,0" />
+                            <TextBlock  Grid.Column="1" Text="{Binding Price}" VerticalAlignment="Center" />
+                            <Button FontFamily="Segoe MDL2 Assets" Content="&#xE712;" Grid.Column="2" CommandParameter="{Binding .}" Command="{Binding DataContext.NavigateToProductDetailsCommand, RelativeSource={RelativeSource AncestorType=UserControl}}" HorizontalAlignment="Right" Padding="16" VerticalAlignment="Center" />
+                        </Grid>
+                    </Border>
                 </DataTemplate>
             </ListView.ItemTemplate>
         </ListView>

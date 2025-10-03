@@ -9,31 +9,30 @@
              d:DataContext="{d:DesignInstance Type=viewmodels:ProductDetailsViewModel}"
              xmlns:viewmodels="clr-namespace:Presentation.WPFApp.ViewModels"
              xmlns:models="clr-namespace:Infrastructure.Models;assembly=Infrastructure"
-             d:DesignHeight="800" d:DesignWidth="800">
+             d:DesignHeight="770" d:DesignWidth="600">
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto" />
             <RowDefinition Height="Auto" />
             <RowDefinition Height="Auto" />
             <RowDefinition Height="Auto" />
-            <RowDefinition Height="Auto" />
-            <RowDefinition Height="Auto" />
-            <RowDefinition Height="Auto" />
         </Grid.RowDefinitions>
-        <TextBlock Text="Product Details" Padding="5" FontSize="20" FontWeight="Bold" Grid.Row="0" />
+        <TextBlock Text="Product Details" Padding="5" FontSize="20" FontWeight="Bold" Grid.Row="0" VerticalAlignment="Center" />
         <TextBlock Text="{Binding ErrorMessage}" Padding="5" Grid.Row="1" Foreground="Red" />
         <StackPanel Grid.Row="2">
-            <Label Content="Title" Margin="0 5 0 0" />
+            <Label Content="Title" Margin="0 5 0 0" FontWeight="Bold" />
             <TextBlock x:Name="Title" Text="{Binding Product.Title}" Padding="5" />
-            <Label Content="Price" Margin="0 5 0 0" />
+            <Label Content="Price" Margin="0 5 0 0" FontWeight="Bold" />
             <TextBlock x:Name="Price"  Text="{Binding Product.Price}" Padding="5" />
-            <Label Content="Category" Margin="0 5 0 0" />
+            <Label Content="Category" Margin="0 5 0 0" FontWeight="Bold"  />
             <TextBlock x:Name="Category"  Text="{Binding Product.Category.Name}" Padding="5" />
-            <Label Content="Manufacturer" Margin="0 5 0 0" />
+            <Label Content="Manufacturer" Margin="0 5 0 0" FontWeight="Bold"  />
             <TextBlock x:Name="Manufacturer"  Text="{Binding Product.Manufacturer.Name}" Padding="5" />
         </StackPanel>
-        <Button Grid.Row="3" Content="Edit" Command="{Binding NavigateToProductEditCommand}" Padding="5" Margin="0 20 0 0"/>
-        <Button Grid.Row="4" Content="Delete" Command="{Binding DeleteCommand}" Padding="5" Margin="0 20 0 0"/>
-        <Button Grid.Row="5" Content="Cancel"  Command="{Binding NavigateToListCommand}" Padding="5" Margin="0 20 0 0"/>
+        <UniformGrid Grid.Row="3" Rows="1" Columns="3" Margin="0 40 0 0">
+            <Button Content="Edit" Command="{Binding NavigateToProductEditCommand}" Padding="5 8" Margin="0 0 10 0"/>
+            <Button Content="Delete" Command="{Binding DeleteCommand}" Padding="5 8" Margin="5 0 5 0"/>
+            <Button Content="Cancel" Command="{Binding NavigateToListCommand}" Padding="5 8" Margin="10 0 0 0"/>
+        </UniformGrid>
     </Grid>
 </UserControl>

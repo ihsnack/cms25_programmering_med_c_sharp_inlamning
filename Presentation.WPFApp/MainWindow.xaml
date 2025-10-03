@@ -7,24 +7,28 @@
         mc:Ignorable="d"
         xmlns:viewmodels="clr-namespace:Presentation.WPFApp.ViewModels"
         xmlns:views="clr-namespace:Presentation.WPFApp.Views"
+        WindowStartupLocation="CenterScreen"
         d:DataContext="{d:DesignInstance Type=viewmodels:MainViewModel}"   
-        Title="MainWindow" Height="800" Width="800">
-    <Grid Margin="20">
-        <ContentControl Content="{Binding CurrentViewModel}">
-            <ContentControl.Resources>
-                <DataTemplate DataType="{x:Type viewmodels:ProductListViewModel}">
-                    <views:ProductListView />
-                </DataTemplate>
-                <DataTemplate DataType="{x:Type viewmodels:ProductAddViewModel}">
-                    <views:ProductAddView />
-                </DataTemplate>
-                <DataTemplate DataType="{x:Type viewmodels:ProductDetailsViewModel}">
-                    <views:ProductDetailsView />
-                </DataTemplate>
-                <DataTemplate DataType="{x:Type viewmodels:ProductEditViewModel}">
-                    <views:ProductEditView />
-                </DataTemplate>
-            </ContentControl.Resources>
-        </ContentControl>
-    </Grid>
+        Title="Products" Height="770" Width="600">
+
+    <Border CornerRadius="25">
+        <Grid Margin="20">
+            <ContentControl Content="{Binding CurrentViewModel}">
+                <ContentControl.Resources>
+                    <DataTemplate DataType="{x:Type viewmodels:ProductListViewModel}">
+                        <views:ProductListView />
+                    </DataTemplate>
+                    <DataTemplate DataType="{x:Type viewmodels:ProductAddViewModel}">
+                        <views:ProductAddView />
+                    </DataTemplate>
+                    <DataTemplate DataType="{x:Type viewmodels:ProductDetailsViewModel}">
+                        <views:ProductDetailsView />
+                    </DataTemplate>
+                    <DataTemplate DataType="{x:Type viewmodels:ProductEditViewModel}">
+                        <views:ProductEditView />
+                    </DataTemplate>
+                </ContentControl.Resources>
+            </ContentControl>
+        </Grid>
+    </Border>
 </Window>
