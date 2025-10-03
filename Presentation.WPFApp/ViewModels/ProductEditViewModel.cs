@@ -1,4 +1,5 @@
-﻿using CommunityToolkit.Mvvm.ComponentModel;
+﻿using System.Globalization;
+using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using Infrastructure.Interfaces;
 using Infrastructure.Models;
@@ -12,10 +13,49 @@ public partial class ProductEditViewModel(IServiceProvider serviceProvider, IPro
     private readonly IProductService _productService = productService;
 
     [ObservableProperty]
-    public Product _product = new();
+    private Product _product = new();
 
     [ObservableProperty]
-    public string _errorMessage = null!;
+    private string _priceText = string.Empty;
+
+    [ObservableProperty]
+    private string _errorMessage = null!;
+
+    // I used Copilot to generate this method for not allowing non numerical values in the input
+    partial void OnProductChanged(Product value)
+    {
+        if (value != null)
+        {
+            _priceText = value.Price.ToString(CultureInfo.InvariantCulture);
+            OnPropertyChanged(nameof(PriceText));
+        }
+    }
+
+    // I used Copilot to generate this method for not allowing non numerical values in the input
+    partial void OnPriceTextChanged(string value)
+    {
+        if (decimal.TryParse(value, NumberStyles.Number, CultureInfo.InvariantCulture, out decimal price))
+        {
+            if (_product.Price != price)
+            {
+                _product.Price = price;
+            }
+        }
+        else if (string.IsNullOrWhiteSpace(value))
+        {
+            if (_product.Price != 0)
+            {
+                _product.Price = 0;
+            }
+        }
+        else
+        {
+            if (_product.Price != 0)
+            {
+                _product.Price = 0;
+            }
+        }
+    }
 
     [RelayCommand]
     public void NavigateToList()

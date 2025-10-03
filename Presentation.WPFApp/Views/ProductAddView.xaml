@@ -24,7 +24,7 @@
             <Label Content="Title" Margin="0 5 0 0" />
             <TextBox x:Name="Title" Text="{Binding Product.Title}" Padding="5" />
             <Label Content="Price" Margin="0 5 0 0" />
-            <TextBox x:Name="Price"  Text="{Binding Product.Price}" Padding="5" />
+            <TextBox x:Name="Price"  Text="{Binding PriceText, UpdateSourceTrigger=PropertyChanged}" Padding="5" />
             <Label Content="Category" Margin="0 5 0 0" />
             <TextBox x:Name="Category"  Text="{Binding Product.Category.Name}" Padding="5" />
             <Label Content="Manufacturer" Margin="0 5 0 0" />
