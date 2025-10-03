@@ -1,6 +1,7 @@
 ﻿using System.Text.Json;
 using System.Threading.Tasks;
 using Infrastructure.Factories;
+using Infrastructure.Helpers;
 using Infrastructure.Interfaces;
 using Infrastructure.Models;
 
@@ -55,7 +56,7 @@ public class ProductService(IProductRepository productRepository, IFileService f
                     };
                 }
 
-                if (string.IsNullOrWhiteSpace(product.Title))
+                if (!ProductValidationHelper.IsValidTitle(product.Title))
                 {
                     return new ResponseResult<IEnumerable<Product>>
                     {
@@ -64,7 +65,7 @@ public class ProductService(IProductRepository productRepository, IFileService f
                     };
                 }
 
-                if (product.Price <= 0)
+                if (!ProductValidationHelper.IsValidPrice(product.Price))
                 {
                     return new ResponseResult<IEnumerable<Product>>
                     {
@@ -73,22 +74,21 @@ public class ProductService(IProductRepository productRepository, IFileService f
                     };
                 }
 
-                if (product.Category == null || string.IsNullOrWhiteSpace(product.Category.Name))
+                if (product.Category == null || !ProductValidationHelper.IsValidCategoryName(product.Category.Name))
                 {
                     return new ResponseResult<IEnumerable<Product>>
                     {
                         Success = false,
-                        Message = "Product category name needs to be provided. File load aborted.",
-
+                        Message = "Product category name needs to be provided. File load aborted."
                     };
                 }
 
-                if (product.Manufacturer == null || string.IsNullOrWhiteSpace(product.Manufacturer.Name))
+                if (product.Manufacturer == null || !ProductValidationHelper.IsValidManufacturerName(product.Manufacturer.Name))
                 {
                     return new ResponseResult<IEnumerable<Product>>
                     {
                         Success = false,
-                        Message = "Product manufacturer name needs to be provided. File load aborted.",
+                        Message = "Product manufacturer name needs to be provided. File load aborted."
                     };
                 }
             }
@@ -219,7 +219,8 @@ public class ProductService(IProductRepository productRepository, IFileService f
                     Result = false
                 };
             }
-            if (string.IsNullOrWhiteSpace(product.Title))
+            
+            if (!ProductValidationHelper.IsValidTitle(product.Title))
             {
                 return new ResponseResult<bool>
                 {
@@ -228,7 +229,8 @@ public class ProductService(IProductRepository productRepository, IFileService f
                     Result = false
                 };
             }
-            if (product.Price <= 0)
+            
+            if (!ProductValidationHelper.IsValidPrice(product.Price))
             {
                 return new ResponseResult<bool>
                 {
@@ -238,7 +240,7 @@ public class ProductService(IProductRepository productRepository, IFileService f
                 };
             }
 
-            if (product.Category == null || string.IsNullOrWhiteSpace(product.Category.Name))
+            if (product.Category == null || !ProductValidationHelper.IsValidCategoryName(product.Category.Name))
             {
                 return new ResponseResult<bool>
                 {
@@ -248,7 +250,7 @@ public class ProductService(IProductRepository productRepository, IFileService f
                 };
             }
 
-            if (product.Manufacturer == null || string.IsNullOrWhiteSpace(product.Manufacturer.Name))
+            if (product.Manufacturer == null || !ProductValidationHelper.IsValidManufacturerName(product.Manufacturer.Name))
             {
                 return new ResponseResult<bool>
                 {
@@ -279,7 +281,7 @@ public class ProductService(IProductRepository productRepository, IFileService f
                 return new ResponseResult<bool>
                 {
                     Success = false,
-                    Message = $"{saveResponse.Message}",
+                    Message = $"{saveResponse.Message}"
                 };
             }
 
@@ -323,7 +325,7 @@ public class ProductService(IProductRepository productRepository, IFileService f
                 };
             }
 
-            if (string.IsNullOrWhiteSpace(product.Id))
+            if (!ProductValidationHelper.IsValidId(product.Id))
             {
                 return new ResponseResult<bool>
                 {
@@ -333,7 +335,7 @@ public class ProductService(IProductRepository productRepository, IFileService f
                 };
             }
 
-            if (string.IsNullOrWhiteSpace(product.Title))
+            if (!ProductValidationHelper.IsValidTitle(product.Title))
             {
                 return new ResponseResult<bool>
                 {
@@ -342,7 +344,8 @@ public class ProductService(IProductRepository productRepository, IFileService f
                     Result = false
                 };
             }
-            if (product.Price <= 0)
+            
+            if (!ProductValidationHelper.IsValidPrice(product.Price))
             {
                 return new ResponseResult<bool>
                 {
@@ -352,7 +355,7 @@ public class ProductService(IProductRepository productRepository, IFileService f
                 };
             }
 
-            if (product.Category == null || string.IsNullOrWhiteSpace(product.Category.Name))
+            if (product.Category == null || !ProductValidationHelper.IsValidCategoryName(product.Category.Name))
             {
                 return new ResponseResult<bool>
                 {
@@ -362,7 +365,7 @@ public class ProductService(IProductRepository productRepository, IFileService f
                 };
             }
 
-            if (product.Manufacturer == null || string.IsNullOrWhiteSpace(product.Manufacturer.Name))
+            if (product.Manufacturer == null || !ProductValidationHelper.IsValidManufacturerName(product.Manufacturer.Name))
             {
                 return new ResponseResult<bool>
                 {
@@ -390,9 +393,8 @@ public class ProductService(IProductRepository productRepository, IFileService f
                 return new ResponseResult<bool>
                 {
                     Success = false,
-                    Message = "Could not find product to update.",
+                    Message = "Could not find product to update."
                 };
-
             }
 
             productToUpdate.Title = product.Title;
@@ -407,7 +409,7 @@ public class ProductService(IProductRepository productRepository, IFileService f
                 return new ResponseResult<bool>
                 {
                     Success = false,
-                    Message = $"{saveResponse.Message}",
+                    Message = $"{saveResponse.Message}"
                 };
             }
 
@@ -425,7 +427,7 @@ public class ProductService(IProductRepository productRepository, IFileService f
             return new ResponseResult<bool>
             {
                 Success = false,
-                Message = ex.Message,
+                Message = ex.Message
             };
         }
         finally
@@ -436,17 +438,16 @@ public class ProductService(IProductRepository productRepository, IFileService f
 
     public async Task<ResponseResult<bool>> RemoveProduct(string id)
     {
-
         try
         {
             _cts = new CancellationTokenSource();
 
-            if (string.IsNullOrWhiteSpace(id))
+            if (!ProductValidationHelper.IsValidId(id))
             {
                 return new ResponseResult<bool>
                 {
                     Success = false,
-                    Message = "Product ID cannot be null or empty.",
+                    Message = "Product ID cannot be null or empty."
                 };
             }
 
@@ -454,22 +455,21 @@ public class ProductService(IProductRepository productRepository, IFileService f
 
             if (result > 0)
             {
+                var saveResponse = await SaveProductsAsync();
 
-                var saveReponse = await SaveProductsAsync();
-
-                if (!saveReponse.Success)
+                if (!saveResponse.Success)
                 {
                     return new ResponseResult<bool>
                     {
                         Success = false,
-                        Message = $"{saveReponse.Message}",
+                        Message = $"{saveResponse.Message}"
                     };
                 }
 
                 return new ResponseResult<bool>
                 {
                     Success = true,
-                    Message = "Removed product successfully.",
+                    Message = "Removed product successfully."
                 };
             }
             else
@@ -477,7 +477,7 @@ public class ProductService(IProductRepository productRepository, IFileService f
                 return new ResponseResult<bool>
                 {
                     Success = false,
-                    Message = "Could not find product to remove.",
+                    Message = "Could not find product to remove."
                 };
             }
         }
@@ -488,13 +488,12 @@ public class ProductService(IProductRepository productRepository, IFileService f
             return new ResponseResult<bool>
             {
                 Success = false,
-                Message = "Could not perform removal of product.",
+                Message = "Could not perform removal of product."
             };
         }
         finally
         {
             _cts.Dispose();
         }
-
     }
 }

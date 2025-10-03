@@ -1,6 +1,7 @@
 ﻿using System.Globalization;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using Infrastructure.Helpers;
 using Infrastructure.Interfaces;
 using Infrastructure.Models;
 using Microsoft.Extensions.DependencyInjection;
@@ -21,7 +22,6 @@ public partial class ProductEditViewModel(IServiceProvider serviceProvider, IPro
     [ObservableProperty]
     private string _errorMessage = null!;
 
-    // I used Copilot to generate this method for not allowing non numerical values in the input
     partial void OnProductChanged(Product value)
     {
         if (value != null)
@@ -31,10 +31,9 @@ public partial class ProductEditViewModel(IServiceProvider serviceProvider, IPro
         }
     }
 
-    // I used Copilot to generate this method for not allowing non numerical values in the input
     partial void OnPriceTextChanged(string value)
     {
-        if (decimal.TryParse(value, NumberStyles.Number, CultureInfo.InvariantCulture, out decimal price))
+        if (ProductValidationHelper.TryParsePrice(value, out decimal price))
         {
             if (_product.Price != price)
             {

@@ -1,5 +1,6 @@
 ﻿using System.Globalization;
 using System.Threading.Tasks;
+using Infrastructure.Helpers;
 using Infrastructure.Interfaces;
 using Infrastructure.Models;
 using Presentation.Interfaces;
@@ -66,20 +67,15 @@ public class MenuDialogs : IMenuDialogs
             {
                 title = Dialogs.Prompt("Enter Title: ");
 
-                if (string.IsNullOrWhiteSpace(title))
+                if (!ProductValidationHelper.IsValidTitle(title))
                 {
                     Console.WriteLine();
                     Console.WriteLine("Title cannot be empty. Please try again. Press any key.");
                     Console.WriteLine();
                 }
-            } while (string.IsNullOrWhiteSpace(title));
+            } while (!ProductValidationHelper.IsValidTitle(title));
 
             Console.WriteLine();
-
-            const NumberStyles styles =
-                NumberStyles.AllowLeadingWhite |
-                NumberStyles.AllowTrailingWhite |
-                NumberStyles.AllowDecimalPoint;
 
             decimal priceValue;
             string priceInput;
@@ -88,14 +84,14 @@ public class MenuDialogs : IMenuDialogs
             {
                 priceInput = Dialogs.Prompt("Enter Price (use dot as decimal separator): ");
 
-                if (!decimal.TryParse(priceInput, styles, CultureInfo.InvariantCulture, out priceValue) || priceValue <= 0)
+                if (!ProductValidationHelper.TryParsePrice(priceInput, out priceValue))
                 {
                     Console.WriteLine();
                     Console.WriteLine("Please enter a valid price greater than zero. Press any key.");
                     Console.WriteLine();
                     Console.ReadKey();
                 }
-            } while (!decimal.TryParse(priceInput, styles, CultureInfo.InvariantCulture, out priceValue) || priceValue <= 0);
+            } while (!ProductValidationHelper.TryParsePrice(priceInput, out priceValue));
 
             Console.WriteLine();
 
@@ -103,14 +99,14 @@ public class MenuDialogs : IMenuDialogs
             do
             {
                 categoryName = Dialogs.Prompt("Enter Category name: ");
-                if (string.IsNullOrWhiteSpace(categoryName))
+                if (!ProductValidationHelper.IsValidCategoryName(categoryName))
                 {
                     Console.WriteLine();
                     Console.WriteLine("Category name cannot be empty. Please try again. Press any key.");
                     Console.WriteLine();
                     Console.ReadKey();
                 }
-            } while (string.IsNullOrWhiteSpace(categoryName));
+            } while (!ProductValidationHelper.IsValidCategoryName(categoryName));
 
             Category category = new Category { Name = categoryName };
 
@@ -120,14 +116,14 @@ public class MenuDialogs : IMenuDialogs
             do
             {
                 manufacturerName = Dialogs.Prompt("Enter Manufacturer name: ");
-                if (string.IsNullOrWhiteSpace(manufacturerName))
+                if (!ProductValidationHelper.IsValidManufacturerName(manufacturerName))
                 {
                     Console.WriteLine();
                     Console.WriteLine("Manufacturer name cannot be empty. Please try again. Press any key.");
                     Console.WriteLine();
                     Console.ReadKey();
                 }
-            } while (string.IsNullOrWhiteSpace(manufacturerName));
+            } while (!ProductValidationHelper.IsValidManufacturerName(manufacturerName));
 
             Manufacturer manufacturer = new Manufacturer { Name = manufacturerName };
 
