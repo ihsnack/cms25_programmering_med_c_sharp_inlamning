@@ -41,7 +41,7 @@ public partial class ProductListViewModel : ObservableObject
             }
 
             var result = response.Result;
-            ProductList = new ObservableCollection<Product>(result!);
+            ProductList = result != null ? new ObservableCollection<Product>(result) : new ObservableCollection<Product>();
         }
         catch (Exception ex)
         {
