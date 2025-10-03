@@ -14,6 +14,9 @@ public partial class ProductListViewModel : ObservableObject
     [ObservableProperty]
     private ObservableCollection<Product> _productList = [];
 
+    [ObservableProperty]
+    private string _errorMessage = null!;
+
     public ProductListViewModel(IServiceProvider serviceProvider)
     {
         _serviceProvider = serviceProvider;
@@ -23,10 +26,28 @@ public partial class ProductListViewModel : ObservableObject
 
     private async Task PopulateProductListAsync()
     {
-        var productService = _serviceProvider.GetRequiredService<IProductService>();
-        var products = await productService.LoadProductsAsync();
-        var result = products.Result;
-        ProductList = new ObservableCollection<Product>(result!);
+        try
+        {
+            ErrorMessage = null!;
+
+            var productService = _serviceProvider.GetRequiredService<IProductService>();
+            var response = await productService.LoadProductsAsync();
+
+            if (!response.Success)
+            {
+                ErrorMessage = response.Message!;
+                ProductList = new ObservableCollection<Product>();
+                return;
+            }
+
+            var result = response.Result;
+            ProductList = new ObservableCollection<Product>(result!);
+        }
+        catch (Exception ex)
+        {
+            ErrorMessage = $"An unexpected error occurred: {ex.Message}";
+            ProductList = new ObservableCollection<Product>();
+        }
     }
 
     [RelayCommand]
