@@ -57,125 +57,165 @@ public class MenuDialogs : IMenuDialogs
 
     public async Task AddProductDialogAsync()
     {
-        Dialogs.MenuHeading("NEW PRODUCT");
-
-        string title;
-        do
+        try
         {
-            title = Dialogs.Prompt("Enter Title: ");
+            Dialogs.MenuHeading("NEW PRODUCT");
 
-            if (string.IsNullOrWhiteSpace(title))
+            string title;
+            do
             {
-                Console.WriteLine();
-                Console.WriteLine("Title cannot be empty. Please try again. Press any key.");
-                Console.WriteLine();
-            }
-        } while (string.IsNullOrWhiteSpace(title));
+                title = Dialogs.Prompt("Enter Title: ");
 
-        Console.WriteLine();
+                if (string.IsNullOrWhiteSpace(title))
+                {
+                    Console.WriteLine();
+                    Console.WriteLine("Title cannot be empty. Please try again. Press any key.");
+                    Console.WriteLine();
+                }
+            } while (string.IsNullOrWhiteSpace(title));
 
-        const NumberStyles styles =
-            NumberStyles.AllowLeadingWhite |
-            NumberStyles.AllowTrailingWhite |
-            NumberStyles.AllowDecimalPoint;
+            Console.WriteLine();
 
-        decimal priceValue;
-        string priceInput;
+            const NumberStyles styles =
+                NumberStyles.AllowLeadingWhite |
+                NumberStyles.AllowTrailingWhite |
+                NumberStyles.AllowDecimalPoint;
 
-        do
+            decimal priceValue;
+            string priceInput;
+
+            do
+            {
+                priceInput = Dialogs.Prompt("Enter Price (use dot as decimal separator): ");
+
+                if (!decimal.TryParse(priceInput, styles, CultureInfo.InvariantCulture, out priceValue) || priceValue <= 0)
+                {
+                    Console.WriteLine();
+                    Console.WriteLine("Please enter a valid price greater than zero. Press any key.");
+                    Console.WriteLine();
+                    Console.ReadKey();
+                }
+            } while (!decimal.TryParse(priceInput, styles, CultureInfo.InvariantCulture, out priceValue) || priceValue <= 0);
+
+            Console.WriteLine();
+
+            string categoryName;
+            do
+            {
+                categoryName = Dialogs.Prompt("Enter Category name: ");
+                if (string.IsNullOrWhiteSpace(categoryName))
+                {
+                    Console.WriteLine();
+                    Console.WriteLine("Category name cannot be empty. Please try again. Press any key.");
+                    Console.WriteLine();
+                    Console.ReadKey();
+                }
+            } while (string.IsNullOrWhiteSpace(categoryName));
+
+            Category category = new Category { Name = categoryName };
+
+            Console.WriteLine();
+
+            string manufacturerName;
+            do
+            {
+                manufacturerName = Dialogs.Prompt("Enter Manufacturer name: ");
+                if (string.IsNullOrWhiteSpace(manufacturerName))
+                {
+                    Console.WriteLine();
+                    Console.WriteLine("Manufacturer name cannot be empty. Please try again. Press any key.");
+                    Console.WriteLine();
+                    Console.ReadKey();
+                }
+            } while (string.IsNullOrWhiteSpace(manufacturerName));
+
+            Manufacturer manufacturer = new Manufacturer { Name = manufacturerName };
+
+            var product = new Product { Title = title, Price = priceValue, Category = category, Manufacturer = manufacturer };
+
+            var response = await _productService.CreateProduct(product);
+
+            Console.WriteLine();
+            Console.WriteLine($"{response.Message} Press any key.");
+            Console.ReadKey();
+        }
+        catch (Exception ex)
         {
-            priceInput = Dialogs.Prompt("Enter Price (use dot as decimal separator): ");
-
-            if (!decimal.TryParse(priceInput, styles, CultureInfo.InvariantCulture, out priceValue) || priceValue <= 0)
-            {
-                Console.WriteLine();
-                Console.WriteLine("Please enter a valid price greater than zero. Press any key.");
-                Console.WriteLine();
-                Console.ReadKey();
-            }
-        } while (!decimal.TryParse(priceInput, styles, CultureInfo.InvariantCulture, out priceValue) || priceValue <= 0);
-
-        Console.WriteLine();
-
-        string categoryName;
-        do
-        {
-            categoryName = Dialogs.Prompt("Enter Category name: ");
-            if (string.IsNullOrWhiteSpace(categoryName))
-            {
-                Console.WriteLine();
-                Console.WriteLine("Category name cannot be empty. Please try again. Press any key.");
-                Console.WriteLine();
-                Console.ReadKey();
-            }
-        } while (string.IsNullOrWhiteSpace(categoryName));
-
-        Category category = new Category { Name = categoryName };
-
-        Console.WriteLine();
-
-        string manufacturerName;
-        do
-        {
-            manufacturerName = Dialogs.Prompt("Enter Manufacturer name: ");
-            if (string.IsNullOrWhiteSpace(manufacturerName))
-            {
-                Console.WriteLine();
-                Console.WriteLine("Manufacturer name cannot be empty. Please try again. Press any key.");
-                Console.WriteLine();
-                Console.ReadKey();
-            }
-        } while (string.IsNullOrWhiteSpace(manufacturerName));
-
-        Manufacturer manufacturer = new Manufacturer { Name = manufacturerName };
-
-        var product = new Product { Title = title, Price = priceValue, Category = category, Manufacturer = manufacturer };
-
-        var result = await _productService.CreateProduct(product);
-
-        Console.WriteLine();
-        Console.WriteLine($"{result.Message} Press any key.");
-        Console.ReadKey();
+            Console.WriteLine();
+            Console.WriteLine($"An unexpected error occurred: {ex.Message}");
+            Console.WriteLine("Press any key to continue.");
+            Console.ReadKey();
+        }
     }
 
     public void ViewProductsDialogAsync()
     {
-        Dialogs.MenuHeading("PRODUCTS");
-        var result = _productService.GetProducts();
-        var products = result.Result ?? [];
-        if (products.Any())
+        try
         {
-            foreach (var product in products)
+            Dialogs.MenuHeading("PRODUCTS");
+            var response = _productService.GetProducts();
+            var products = response.Result ?? [];
+            if (products.Any())
             {
-                Console.WriteLine($"{"Id:",-15}{product.Id}");
-                Console.WriteLine($"{"Title:",-15}{product.Title}");
-                Console.WriteLine($"{"Price:",-15}{product.Price.ToString(CultureInfo.InvariantCulture)}");
-                Console.WriteLine($"{"Category:",-15}{product.Category.Name}");
-                Console.WriteLine($"{"Manufacturer:",-15}{product.Manufacturer.Name}");
-                if (product != products.Last())
+                foreach (var product in products)
                 {
-                    Console.WriteLine();
+                    Console.WriteLine($"{"Id:",-15}{product.Id}");
+                    Console.WriteLine($"{"Title:",-15}{product.Title}");
+                    Console.WriteLine($"{"Price:",-15}{product.Price.ToString(CultureInfo.InvariantCulture)}");
+                    Console.WriteLine($"{"Category:",-15}{product.Category.Name}");
+                    Console.WriteLine($"{"Manufacturer:",-15}{product.Manufacturer.Name}");
+                    if (product != products.Last())
+                    {
+                        Console.WriteLine();
+                    }
                 }
+                Console.WriteLine();
             }
-            Console.WriteLine();
+            Console.WriteLine($"{response.Message} Press any key.");
+            Console.ReadKey();
         }
-        Console.WriteLine($"{result.Message} Press any key.");
-        Console.ReadKey();
+        catch (Exception ex)
+        {
+            Console.WriteLine();
+            Console.WriteLine($"An unexpected error occurred: {ex.Message}");
+            Console.WriteLine("Press any key to continue.");
+            Console.ReadKey();
+        }
     }
 
     public async Task ViewLoadProductsFromFileAsync()
     {
-        Dialogs.MenuHeading("LOAD PRODUCTS FROM FILE");
-        var result = await _productService.LoadProductsAsync();
-        Console.WriteLine($"{result.Message} Press any key.");
-        Console.ReadKey();
+        try
+        {
+            Dialogs.MenuHeading("LOAD PRODUCTS FROM FILE");
+            var response = await _productService.LoadProductsAsync();
+            Console.WriteLine($"{response.Message} Press any key.");
+            Console.ReadKey();
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine();
+            Console.WriteLine($"An unexpected error occurred: {ex.Message}");
+            Console.WriteLine("Press any key to continue.");
+            Console.ReadKey();
+        }
     }
 
     public async Task ViewSaveListToFileAsync()
     {
-        Dialogs.MenuHeading("SAVE LIST TO FILE");
-        var result = await _productService.SaveProductsAsync();
-        Console.WriteLine($"{result.Message} Press any key.");
-        Console.ReadKey();
+        try
+        {
+            Dialogs.MenuHeading("SAVE LIST TO FILE");
+            var response = await _productService.SaveProductsAsync();
+            Console.WriteLine($"{response.Message} Press any key.");
+            Console.ReadKey();
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine();
+            Console.WriteLine($"An unexpected error occurred: {ex.Message}");
+            Console.WriteLine("Press any key to continue.");
+            Console.ReadKey();
+        }
     }
 }

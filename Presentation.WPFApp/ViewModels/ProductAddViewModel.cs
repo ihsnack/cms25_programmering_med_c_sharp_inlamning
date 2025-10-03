@@ -32,21 +32,25 @@ public partial class ProductAddViewModel(IServiceProvider serviceProvider, IProd
     [RelayCommand]
     public async Task SaveProduct()
     {
-
-        ErrorMessage = null!;
-
-        var productInstance = ProductFactory.Create(Product.Title, Product.Price, Product.Category, Product.Manufacturer);
-
-        var response = await _productService.CreateProduct(productInstance);
-
-        if (!response.Success)
+        try
         {
-            ErrorMessage = response.Message!;
-            return;
+            ErrorMessage = null!;
+
+            var productInstance = ProductFactory.Create(Product.Title, Product.Price, Product.Category, Product.Manufacturer);
+
+            var response = await _productService.CreateProduct(productInstance);
+
+            if (!response.Success)
+            {
+                ErrorMessage = response.Message!;
+                return;
+            }
+
+            NavigateToList();
         }
-
-
-        NavigateToList();
+        catch (Exception ex)
+        {
+            ErrorMessage = $"An unexpected error occurred: {ex.Message}";
+        }
     }
-
 }
