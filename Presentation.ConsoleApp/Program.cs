@@ -9,9 +9,9 @@ using Presentation.Interfaces;
 var host = Host.CreateDefaultBuilder()
     .ConfigureServices((config, services) =>
     {
-        services.AddSingleton<IFileRepository, FileRepository>();
+        services.AddScoped<IFileRepository, FileRepository>();
         services.AddScoped<IFileService, FileService>();
-        services.AddScoped<IProductRepository, ProductRepository>();
+        services.AddSingleton<IProductRepository, ProductRepository>();
         services.AddScoped<IProductService, ProductService>();
         services.AddScoped<IMenuDialogs, MenuDialogs>();
     })
