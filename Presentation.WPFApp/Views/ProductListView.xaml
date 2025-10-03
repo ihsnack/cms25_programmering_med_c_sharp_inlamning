@@ -34,7 +34,7 @@
         <ListView Grid.Row="1" ItemsSource="{Binding ProductList}" Margin="0 20 0 0" HorizontalContentAlignment="Stretch" >
             <ListView.ItemTemplate>
                 <DataTemplate DataType="{x:Type models:Product}">
-                    <Border Padding="5 10">
+                    <Border Padding="0 10 0 10">
                         <Grid HorizontalAlignment="Stretch" VerticalAlignment="Center">
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition Width="auto" />
@@ -45,7 +45,7 @@
                             
                             <TextBlock  Grid.Column="0" Text="{Binding Title}" FontWeight="Bold" VerticalAlignment="Center" Margin="0,0,7,0" />
                             <TextBlock  Grid.Column="1" Text="{Binding Price}" VerticalAlignment="Center" />
-                            <Button FontFamily="Segoe MDL2 Assets" Content="&#xE712;" Grid.Column="2" CommandParameter="{Binding .}" Command="{Binding DataContext.NavigateToProductDetailsCommand, RelativeSource={RelativeSource AncestorType=UserControl}}" HorizontalAlignment="Right" Padding="12" VerticalAlignment="Center" />
+                            <Button FontFamily="Segoe MDL2 Assets" Content="&#xE712;" Grid.Column="2" CommandParameter="{Binding .}" Command="{Binding DataContext.NavigateToProductDetailsCommand, RelativeSource={RelativeSource AncestorType=UserControl}}" HorizontalAlignment="Right" Padding="16" VerticalAlignment="Center" />
                         </Grid>
                     </Border>
                 </DataTemplate>

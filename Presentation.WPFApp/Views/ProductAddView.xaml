@@ -16,7 +16,6 @@
             <RowDefinition Height="Auto" />
             <RowDefinition Height="Auto" />
             <RowDefinition Height="Auto" />
-            <RowDefinition Height="Auto" />
         </Grid.RowDefinitions>
         <TextBlock Text="New Product" Padding="5" FontSize="20" FontWeight="Bold" Grid.Row="0" VerticalAlignment="Center" />
         <TextBlock Text="{Binding ErrorMessage}" Padding="5" Grid.Row="1" Foreground="Red" />
@@ -29,8 +28,10 @@
             <TextBox x:Name="Category"  Text="{Binding Product.Category.Name}" Padding="5" />
             <Label Content="Manufacturer" Margin="0 5 0 0" />
             <TextBox x:Name="Manufacturer"  Text="{Binding Product.Manufacturer.Name}" Padding="5" />
-            <Button x:Name="AddProduct" Content="Add Product" Padding="5" Command="{Binding SaveProductCommand}" Margin="0 20 0 0" />
-            <Button Content="Cancel" Grid.Row="0"  Command="{Binding NavigateToListCommand}" Padding="5" Margin="0 15 0 0"/>
         </StackPanel>
+        <UniformGrid Grid.Row="3" Rows="1" Columns="2" Margin="0 40 0 0">
+            <Button x:Name="AddProduct" Content="Add Product" Padding="5 8" Command="{Binding SaveProductCommand}" Margin="0 0 10 0" />
+            <Button Content="Cancel" Command="{Binding NavigateToListCommand}" Padding="5 8" Margin="10 0 0 0"/>
+        </UniformGrid>
     </Grid>
 </UserControl>
