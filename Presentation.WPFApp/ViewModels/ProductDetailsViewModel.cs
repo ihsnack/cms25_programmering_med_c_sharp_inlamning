@@ -38,17 +38,24 @@ public partial class ProductDetailsViewModel(IServiceProvider serviceProvider, I
     [RelayCommand]
     public async Task Delete()
     {
-        ErrorMessage = null!;
-
-        var response = await _productService.RemoveProduct(Product.Id);
-
-        if (!response.Success)
+        try
         {
-            ErrorMessage = response.Message!;
-            return;
-        }
+            ErrorMessage = null!;
 
-        NavigateToList();
+            var response = await _productService.RemoveProduct(Product.Id);
+
+            if (!response.Success)
+            {
+                ErrorMessage = response.Message!;
+                return;
+            }
+
+            NavigateToList();
+        }
+        catch (Exception ex)
+        {
+            ErrorMessage = $"An unexpected error occurred: {ex.Message}";
+        }
     }
 
 }

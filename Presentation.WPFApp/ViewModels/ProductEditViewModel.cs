@@ -27,17 +27,23 @@ public partial class ProductEditViewModel(IServiceProvider serviceProvider, IPro
     [RelayCommand]
     public async Task Save()
     {
-        ErrorMessage = null!;
-
-        var response = await _productService.UpdateProductAsync(Product);
-
-        if (!response.Success)
+        try
         {
-            ErrorMessage = response.Message!;
-            return;
+            ErrorMessage = null!;
+
+            var response = await _productService.UpdateProductAsync(Product);
+
+            if (!response.Success)
+            {
+                ErrorMessage = response.Message!;
+                return;
+            }
+
+            NavigateToList();
         }
-
-        NavigateToList();
-
+        catch (Exception ex)
+        {
+            ErrorMessage = $"An unexpected error occurred: {ex.Message}";
+        }
     }
 }
