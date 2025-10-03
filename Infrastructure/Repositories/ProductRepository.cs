@@ -22,9 +22,9 @@ public class ProductRepository : IProductRepository
         return _products;
     }
 
-    public Product GetProductByIdFromList(string id)
+    public Product? GetProductByIdFromList(string id)
     {
-        return _products.FirstOrDefault(e => e.Id == id)!;
+        return _products.FirstOrDefault(e => e.Id == id);
     }
 
     public int RemoveProductFromList(string id)
