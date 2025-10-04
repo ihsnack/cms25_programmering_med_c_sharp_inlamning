@@ -17,22 +17,22 @@
             <RowDefinition Height="Auto" />
             <RowDefinition Height="Auto" />
         </Grid.RowDefinitions>
-        <TextBlock Text="Product Details" Padding="5" FontSize="20" FontWeight="Bold" Grid.Row="0" VerticalAlignment="Center" />
-        <TextBlock Text="{Binding ErrorMessage}" Padding="5" Grid.Row="1" Foreground="Red" />
+        <TextBlock Text="Product Details" Style="{StaticResource ViewTitleTextBlock}" Grid.Row="0" />
+        <TextBlock Text="{Binding ErrorMessage}" Style="{StaticResource ErrorMessageTextBlock}" Grid.Row="1" />
         <StackPanel Grid.Row="2">
-            <Label Content="Title" Margin="0 5 0 0" FontWeight="Bold" />
+            <Label Content="Title" Style="{StaticResource FormLabel}" />
             <TextBlock Text="{Binding Product.Title}" Padding="5" />
-            <Label Content="Price" Margin="0 5 0 0" FontWeight="Bold" />
+            <Label Content="Price" Style="{StaticResource FormLabel}" />
             <TextBlock Text="{Binding Product.Price}" Padding="5" />
-            <Label Content="Category" Margin="0 5 0 0" FontWeight="Bold"  />
+            <Label Content="Category" Style="{StaticResource FormLabel}"  />
             <TextBlock Text="{Binding Product.Category.Name}" Padding="5" />
-            <Label Content="Manufacturer" Margin="0 5 0 0" FontWeight="Bold"  />
+            <Label Content="Manufacturer" Style="{StaticResource FormLabel}"  />
             <TextBlock Text="{Binding Product.Manufacturer.Name}" Padding="5" />
         </StackPanel>
         <UniformGrid Grid.Row="3" Rows="1" Columns="3" Margin="0 40 0 0">
-            <Button Content="Edit" Command="{Binding NavigateToProductEditCommand}" Padding="5 8" Margin="0 0 10 0"/>
-            <Button Content="Delete" Command="{Binding DeleteCommand}" Padding="5 8" Margin="5 0 5 0"/>
-            <Button Content="Cancel" Command="{Binding NavigateToListCommand}" Padding="5 8" Margin="10 0 0 0"/>
+            <Button Content="Edit" Style="{StaticResource StandarButton}" Command="{Binding NavigateToProductEditCommand}" Margin="0 0 10 0"/>
+            <Button Content="Delete" Style="{StaticResource StandarButton}" Command="{Binding DeleteCommand}" Margin="5 0 5 0"/>
+            <Button Content="Cancel" Style="{StaticResource StandarButton}" Command="{Binding NavigateToListCommand}" Margin="10 0 0 0"/>
         </UniformGrid>
     </Grid>
 </UserControl>
