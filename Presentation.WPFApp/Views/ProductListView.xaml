@@ -27,9 +27,9 @@
                 <RowDefinition Height="Auto" />
             </Grid.RowDefinitions>
 
-            <TextBlock Text="Product List" Padding="5" FontSize="20" FontWeight="Bold" HorizontalAlignment="Left" Grid.Column="0" Grid.Row="0" VerticalAlignment="Center" />
-            <TextBlock Text="{Binding ErrorMessage}" Padding="5" Grid.Row="1" Foreground="Red" Grid.Column="0" />
-            <Button Content="&#xE710;" Padding="12" FontFamily="Segoe MDL2 Assets" Command="{Binding NavigateToAddProductCommand}" HorizontalAlignment="Right" Grid.Column="1" Grid.Row="0" VerticalAlignment="Center" />
+            <TextBlock Text="Product List" Style="{StaticResource ViewTitleTextBlock}" HorizontalAlignment="Left" Grid.Column="0" Grid.Row="0" />
+            <TextBlock Text="{Binding ErrorMessage}" Style="{StaticResource ErrorMessageTextBlock}" Grid.Row="1" Grid.Column="0" />
+            <Button Style="{StaticResource ProductAddViewIconButton}" Command="{Binding NavigateToAddProductCommand}" HorizontalAlignment="Right" Grid.Column="1" Grid.Row="0" VerticalAlignment="Center" />
         </Grid>
         <ListView Grid.Row="1" ItemsSource="{Binding ProductList}" Margin="0 20 0 0" HorizontalContentAlignment="Stretch" >
             <ListView.ItemTemplate>
@@ -45,7 +45,7 @@
                             
                             <TextBlock  Grid.Column="0" Text="{Binding Title}" FontWeight="Bold" VerticalAlignment="Center" Margin="0,0,7,0" />
                             <TextBlock  Grid.Column="1" Text="{Binding Price}" VerticalAlignment="Center" />
-                            <Button FontFamily="Segoe MDL2 Assets" Content="&#xE712;" Grid.Column="2" CommandParameter="{Binding .}" Command="{Binding DataContext.NavigateToProductDetailsCommand, RelativeSource={RelativeSource AncestorType=UserControl}}" HorizontalAlignment="Right" Padding="16" VerticalAlignment="Center" />
+                            <Button Style="{StaticResource ProductViewIconButton}" Grid.Column="2" CommandParameter="{Binding .}" Command="{Binding DataContext.NavigateToProductDetailsCommand, RelativeSource={RelativeSource AncestorType=UserControl}}" HorizontalAlignment="Right" VerticalAlignment="Center" />
                         </Grid>
                     </Border>
                 </DataTemplate>

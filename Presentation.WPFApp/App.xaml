@@ -4,6 +4,13 @@
              xmlns:local="clr-namespace:Presentation.WPFApp"
              >
     <Application.Resources>
-         
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="/Resources/Styling/Buttons.xaml" />
+                <ResourceDictionary Source="/Resources/Styling/TextBlocks.xaml" />
+                <ResourceDictionary Source="/Resources/Styling/Label.xaml" />
+                <ResourceDictionary Source="/Resources/Styling/TextBox.xaml" />
+            </ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>
     </Application.Resources>
 </Application>
