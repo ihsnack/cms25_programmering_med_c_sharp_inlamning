@@ -60,7 +60,7 @@ public partial class ProductAddViewModel(IServiceProvider serviceProvider, IProd
 
             var productInstance = ProductFactory.Create(Product.Title, Product.Price, Product.Category, Product.Manufacturer);
 
-            var response = await _productService.CreateProduct(productInstance);
+            var response = await _productService.CreateProductAsync(productInstance);
 
             if (!response.Success)
             {

@@ -439,7 +439,7 @@ public class ProductService_Tests
         var productService = new ProductService(productRepositoryMock.Object, fileServiceMock.Object);
 
         // act
-        var response = await productService.CreateProduct(null!);
+        var response = await productService.CreateProductAsync(null!);
 
         // assert
         Assert.False(response.Success);
@@ -459,7 +459,7 @@ public class ProductService_Tests
         var product = ProductFactory.Create("", 9.99m, GetTestCategory(), GetTestManufacturer());
 
         // act
-        var response = await productService.CreateProduct(product);
+        var response = await productService.CreateProductAsync(product);
 
         // assert
         Assert.False(response.Success);
@@ -479,7 +479,7 @@ public class ProductService_Tests
         var product = ProductFactory.Create("Valid Title", -5.99m, GetTestCategory(), GetTestManufacturer());
 
         // act
-        var response = await productService.CreateProduct(product);
+        var response = await productService.CreateProductAsync(product);
 
         // assert
         Assert.False(response.Success);
@@ -499,7 +499,7 @@ public class ProductService_Tests
         var product = ProductFactory.Create("Valid Title", 0m, GetTestCategory(), GetTestManufacturer());
 
         // act
-        var response = await productService.CreateProduct(product);
+        var response = await productService.CreateProductAsync(product);
 
         // assert
         Assert.False(response.Success);
@@ -519,7 +519,7 @@ public class ProductService_Tests
         var product = ProductFactory.Create("Valid Title", 9.99m, new Category { Name = "" }, GetTestManufacturer());
 
         // act
-        var response = await productService.CreateProduct(product);
+        var response = await productService.CreateProductAsync(product);
 
         // assert
         Assert.False(response.Success);
@@ -538,7 +538,7 @@ public class ProductService_Tests
         var product = ProductFactory.Create("Valid Title", 9.99m, GetTestCategory(), new Manufacturer { Name = "" });
 
         // act
-        var response = await productService.CreateProduct(product);
+        var response = await productService.CreateProductAsync(product);
 
         // assert
         Assert.False(response.Success);
@@ -558,7 +558,7 @@ public class ProductService_Tests
         var product = ProductFactory.Create("Valid Title", 9.99m, null!, GetTestManufacturer());
 
         // act
-        var response = await productService.CreateProduct(product);
+        var response = await productService.CreateProductAsync(product);
 
         // assert
         Assert.False(response.Success);
@@ -578,7 +578,7 @@ public class ProductService_Tests
         var product = ProductFactory.Create("Valid Title", 9.99m, GetTestCategory(), null!);
 
         // act
-        var response = await productService.CreateProduct(product);
+        var response = await productService.CreateProductAsync(product);
 
         // assert
         Assert.False(response.Success);
@@ -600,7 +600,7 @@ public class ProductService_Tests
         productRepositoryMock.Setup(pr => pr.GetProductsFromList()).Returns(new List<Product> { existingProduct });
 
         // act
-        var response = await productService.CreateProduct(newProduct);
+        var response = await productService.CreateProductAsync(newProduct);
 
         // assert
         Assert.False(response.Success);
@@ -626,7 +626,7 @@ public class ProductService_Tests
         });
 
         // act
-        var response = await productService.CreateProduct(product);
+        var response = await productService.CreateProductAsync(product);
 
         // assert
         Assert.True(response.Success);
@@ -653,7 +653,7 @@ public class ProductService_Tests
         });
 
         // act
-        var response = await productService.CreateProduct(product);
+        var response = await productService.CreateProductAsync(product);
 
         // assert
         Assert.False(response.Success);
@@ -676,7 +676,7 @@ public class ProductService_Tests
         productRepositoryMock.Setup(pr => pr.AddProductToList(It.IsAny<Product>())).Throws(new Exception("Repository error"));
 
         // act
-        var response = await productService.CreateProduct(product);
+        var response = await productService.CreateProductAsync(product);
 
         // assert
         Assert.False(response.Success);
@@ -1030,7 +1030,7 @@ public class ProductService_Tests
         var productService = new ProductService(productRepositoryMock.Object, fileServiceMock.Object);
 
         // act
-        var response = await productService.RemoveProduct(null!);
+        var response = await productService.RemoveProductAsync(null!);
 
         // assert
         Assert.False(response.Success);
@@ -1046,7 +1046,7 @@ public class ProductService_Tests
         var productService = new ProductService(productRepositoryMock.Object, fileServiceMock.Object);
 
         // act
-        var response = await productService.RemoveProduct("");
+        var response = await productService.RemoveProductAsync("");
 
         // assert
         Assert.False(response.Success);
@@ -1062,7 +1062,7 @@ public class ProductService_Tests
         var productService = new ProductService(productRepositoryMock.Object, fileServiceMock.Object);
 
         // act
-        var response = await productService.RemoveProduct("   ");
+        var response = await productService.RemoveProductAsync("   ");
 
         // assert
         Assert.False(response.Success);
@@ -1087,7 +1087,7 @@ public class ProductService_Tests
         });
 
         // act
-        var response = await productService.RemoveProduct(productId);
+        var response = await productService.RemoveProductAsync(productId);
 
         // assert
         Assert.True(response.Success);
@@ -1107,7 +1107,7 @@ public class ProductService_Tests
         productRepositoryMock.Setup(pr => pr.RemoveProductFromList(productId)).Returns(0);
 
         // act
-        var response = await productService.RemoveProduct(productId);
+        var response = await productService.RemoveProductAsync(productId);
 
         // assert
         Assert.False(response.Success);
@@ -1132,7 +1132,7 @@ public class ProductService_Tests
         });
 
         // act
-        var response = await productService.RemoveProduct(productId);
+        var response = await productService.RemoveProductAsync(productId);
 
         // assert
         Assert.False(response.Success);
@@ -1152,7 +1152,7 @@ public class ProductService_Tests
         productRepositoryMock.Setup(pr => pr.RemoveProductFromList(productId)).Throws(new Exception("Repository error"));
 
         // act
-        var response = await productService.RemoveProduct(productId);
+        var response = await productService.RemoveProductAsync(productId);
 
         // assert
         Assert.False(response.Success);
