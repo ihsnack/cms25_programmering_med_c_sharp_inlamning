@@ -129,7 +129,7 @@ public class MenuDialogs : IMenuDialogs
 
             var product = new Product { Title = title, Price = priceValue, Category = category, Manufacturer = manufacturer };
 
-            var response = await _productService.CreateProduct(product);
+            var response = await _productService.CreateProductAsync(product);
 
             Console.WriteLine();
             Console.WriteLine($"{response.Message} Press any key.");

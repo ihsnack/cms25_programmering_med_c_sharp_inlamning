@@ -42,7 +42,7 @@ public partial class ProductDetailsViewModel(IServiceProvider serviceProvider, I
         {
             ErrorMessage = null!;
 
-            var response = await _productService.RemoveProduct(Product.Id);
+            var response = await _productService.RemoveProductAsync(Product.Id);
 
             if (!response.Success)
             {

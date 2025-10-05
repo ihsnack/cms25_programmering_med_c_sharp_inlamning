@@ -119,7 +119,7 @@ public class ProductService(IProductRepository productRepository, IFileService f
             _cts.Dispose();
         }
     }
-    
+
     public async Task<ResponseResult<bool>> SaveProductsAsync()
     {
         try
@@ -204,7 +204,7 @@ public class ProductService(IProductRepository productRepository, IFileService f
         }
     }
 
-    public async Task<ResponseResult<bool>> CreateProduct(Product product)
+    public async Task<ResponseResult<bool>> CreateProductAsync(Product product)
     {
         try
         {
@@ -219,7 +219,7 @@ public class ProductService(IProductRepository productRepository, IFileService f
                     Result = false
                 };
             }
-            
+
             if (!ProductValidationHelper.IsValidTitle(product.Title))
             {
                 return new ResponseResult<bool>
@@ -229,7 +229,7 @@ public class ProductService(IProductRepository productRepository, IFileService f
                     Result = false
                 };
             }
-            
+
             if (!ProductValidationHelper.IsValidPrice(product.Price))
             {
                 return new ResponseResult<bool>
@@ -308,7 +308,7 @@ public class ProductService(IProductRepository productRepository, IFileService f
             _cts.Dispose();
         }
     }
-    
+
     public async Task<ResponseResult<bool>> UpdateProductAsync(Product product)
     {
         try
@@ -344,7 +344,7 @@ public class ProductService(IProductRepository productRepository, IFileService f
                     Result = false
                 };
             }
-            
+
             if (!ProductValidationHelper.IsValidPrice(product.Price))
             {
                 return new ResponseResult<bool>
@@ -436,7 +436,7 @@ public class ProductService(IProductRepository productRepository, IFileService f
         }
     }
 
-    public async Task<ResponseResult<bool>> RemoveProduct(string id)
+    public async Task<ResponseResult<bool>> RemoveProductAsync(string id)
     {
         try
         {
